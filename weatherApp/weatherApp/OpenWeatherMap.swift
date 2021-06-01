@@ -16,7 +16,7 @@ protocol OpenWeatherMapDelegate {
     func failure()
 }
 
-// Adding this line to test GitHub Workflow
+// Adding this line to test GitHub GreatWorkflow
 
 class OpenWeatherMap {
     // OpenWeatherMap Singleton init
