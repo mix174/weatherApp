@@ -12,11 +12,13 @@ import MBProgressHUD
 import CoreLocation
 
 
-
+// Переименовать
+// используй final 
 class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManagerDelegate {
     
     // New Outlets
     
+    // Private properties
     @IBOutlet weak var cityNameLabel: UILabel!
     
     @IBOutlet weak var countryNameLabel: UILabel!
@@ -51,7 +53,7 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
     
     // Singletons
     var openWeather = OpenWeatherMap.shared
-    var hud = MBProgressHUD()
+    var hud = MBProgressHUD() // call it spinner
     var locationManager = CLLocationManager()
     
     
@@ -72,8 +74,8 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
         //let bg = UIImage(named: "")
         //self.view.backgroundColor = UIColor(patternImage: bg!)
     }
-    
-    
+   
+    // YAGNI
     func displayCity() {
         
         let alert = UIAlertController(title: "City", message: "Choose your city", preferredStyle: .alert)
@@ -81,10 +83,11 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
         let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alert.addAction(cancel)
         
+        // Retain cyccle [weak self]
         let ok = UIAlertAction(title: "Ok", style: .default) { (action) -> Void in
             if let textField = alert.textFields?.first {
                 self.loadingIndicator()
-                self.openWeather.getWeatherFor(textField.text!)
+                self.openWeather.getWeatherFor(textField.text!) // force unwrap
             }
         }
         
@@ -111,6 +114,7 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
         
         hud.hide(animated: true)
         
+        //Codable
         // Getting values from JSON
         if let name = weatherJSON["name"].string,
            let country = weatherJSON["sys"]["country"].string,
@@ -163,17 +167,15 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
         print(manager.location ?? "Location is updated, but something wrong with data")
         
         self.loadingIndicator()
-        guard let currentLocation = locations.last else { return }
+        guard let currentLocation = locations.last, currentLocation.horizontalAccuracy > 0  else { return }
         
-        if currentLocation.horizontalAccuracy > 0 {
             // stop updating for saving battery
-            locationManager.stopUpdatingLocation()
+            manager.stopUpdatingLocation()
             
             let coords = CLLocationCoordinate2D(latitude: currentLocation.coordinate.latitude, longitude: currentLocation.coordinate.longitude)
             self.openWeather.getWeatherFor(coords)
             
             print("coords: \(coords)")
-        }
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
