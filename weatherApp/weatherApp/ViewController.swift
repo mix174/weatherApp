@@ -112,6 +112,8 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
     
     func updateWeatherInfo(weatherJSON: JSON) {
         
+        present(by: self)
+        
         hud.hide(animated: true)
         
         //Codable
@@ -180,6 +182,15 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("There is an error with loc-manager: \(error)")
-    }   
+    }
+    
+    
+    func present(by vc: UIViewController) {
+        let openWeatherMap = OpenWeatherMap()
+        let module = CurrentWeatherAssembly(openWeatherMap: openWeatherMap)
+        let newVC = module.build()
+        
+        vc.present(newVC, animated: true, completion: nil)
+    }
 }
 

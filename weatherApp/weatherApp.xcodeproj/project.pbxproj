@@ -17,6 +17,11 @@
 		2176F0F42652B24C00628811 /* OpenWeatherMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2176F0F32652B24C00628811 /* OpenWeatherMap.swift */; };
 		2176F0F82652DBED00628811 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2176F0F72652DBED00628811 /* Images.xcassets */; };
 		218008A92656C8E600B2496E /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 218008A82656C8E600B2496E /* CoreLocation.framework */; };
+		21C1E5A02673C13C00B8ED4B /* OpenWeatherModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C1E59F2673C13C00B8ED4B /* OpenWeatherModel.swift */; };
+		21E9C63F266A87A50080C819 /* Weather.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21E9C63E266A87A50080C819 /* Weather.swift */; };
+		21E9C647266AA56E0080C819 /* CurrentWeatherViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21E9C646266AA56E0080C819 /* CurrentWeatherViewController.swift */; };
+		21E9C64B266AA5910080C819 /* CurrentWeatherPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21E9C64A266AA5910080C819 /* CurrentWeatherPresenter.swift */; };
+		21E9C64E266AA6C60080C819 /* CurrentWeatherAssembly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21E9C64D266AA6C60080C819 /* CurrentWeatherAssembly.swift */; };
 		5631265AC70A05378D7C3971 /* Pods_weatherApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6CF6F84855A39805DABAA8F9 /* Pods_weatherApp.framework */; };
 /* End PBXBuildFile section */
 
@@ -33,6 +38,11 @@
 		2176F0F32652B24C00628811 /* OpenWeatherMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenWeatherMap.swift; sourceTree = "<group>"; };
 		2176F0F72652DBED00628811 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		218008A82656C8E600B2496E /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		21C1E59F2673C13C00B8ED4B /* OpenWeatherModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenWeatherModel.swift; sourceTree = "<group>"; };
+		21E9C63E266A87A50080C819 /* Weather.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Weather.swift; sourceTree = "<group>"; };
+		21E9C646266AA56E0080C819 /* CurrentWeatherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentWeatherViewController.swift; sourceTree = "<group>"; };
+		21E9C64A266AA5910080C819 /* CurrentWeatherPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentWeatherPresenter.swift; sourceTree = "<group>"; };
+		21E9C64D266AA6C60080C819 /* CurrentWeatherAssembly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrentWeatherAssembly.swift; sourceTree = "<group>"; };
 		33566067258296E2FA35ABB9 /* Pods-weatherApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-weatherApp.debug.xcconfig"; path = "Target Support Files/Pods-weatherApp/Pods-weatherApp.debug.xcconfig"; sourceTree = "<group>"; };
 		6CF6F84855A39805DABAA8F9 /* Pods_weatherApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_weatherApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4FE950545E0BF9AD5B3F702 /* Pods-weatherApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-weatherApp.release.xcconfig"; path = "Target Support Files/Pods-weatherApp/Pods-weatherApp.release.xcconfig"; sourceTree = "<group>"; };
@@ -78,12 +88,49 @@
 				210C0DAB265C046C0027CA42 /* ForecastViewController.swift */,
 				2176F0DE265294F800628811 /* ViewController.swift */,
 				2176F0E0265294F800628811 /* Main.storyboard */,
+				21E9C63E266A87A50080C819 /* Weather.swift */,
+				21E9C642266AA4EE0080C819 /* CurrentWeather */,
 				2176F0E32652950600628811 /* Assets.xcassets */,
 				2176F0F72652DBED00628811 /* Images.xcassets */,
 				2176F0E52652950600628811 /* LaunchScreen.storyboard */,
 				2176F0E82652950600628811 /* Info.plist */,
 			);
 			path = weatherApp;
+			sourceTree = "<group>";
+		};
+		21E9C642266AA4EE0080C819 /* CurrentWeather */ = {
+			isa = PBXGroup;
+			children = (
+				21E9C645266AA54E0080C819 /* Presenter */,
+				21E9C644266AA5460080C819 /* Model */,
+				21E9C643266AA53E0080C819 /* View */,
+				21E9C64D266AA6C60080C819 /* CurrentWeatherAssembly.swift */,
+			);
+			path = CurrentWeather;
+			sourceTree = "<group>";
+		};
+		21E9C643266AA53E0080C819 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				21E9C646266AA56E0080C819 /* CurrentWeatherViewController.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		21E9C644266AA5460080C819 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				21C1E59F2673C13C00B8ED4B /* OpenWeatherModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		21E9C645266AA54E0080C819 /* Presenter */ = {
+			isa = PBXGroup;
+			children = (
+				21E9C64A266AA5910080C819 /* CurrentWeatherPresenter.swift */,
+			);
+			path = Presenter;
 			sourceTree = "<group>";
 		};
 		E3AC83A3E64BC28115F38968 /* Pods */ = {
@@ -222,8 +269,13 @@
 				2176F0DF265294F800628811 /* ViewController.swift in Sources */,
 				2176F0DB265294F800628811 /* AppDelegate.swift in Sources */,
 				210C0DAC265C046C0027CA42 /* ForecastViewController.swift in Sources */,
+				21E9C64B266AA5910080C819 /* CurrentWeatherPresenter.swift in Sources */,
+				21C1E5A02673C13C00B8ED4B /* OpenWeatherModel.swift in Sources */,
+				21E9C647266AA56E0080C819 /* CurrentWeatherViewController.swift in Sources */,
 				2176F0DD265294F800628811 /* SceneDelegate.swift in Sources */,
 				2176F0F42652B24C00628811 /* OpenWeatherMap.swift in Sources */,
+				21E9C63F266A87A50080C819 /* Weather.swift in Sources */,
+				21E9C64E266AA6C60080C819 /* CurrentWeatherAssembly.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
