@@ -12,56 +12,33 @@ import MBProgressHUD
 import CoreLocation
 
 
-// Переименовать
-// используй final 
-class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManagerDelegate {
+final class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManagerDelegate {
     
-    // New Outlets
+    @IBOutlet private weak var cityNameLabel: UILabel!
     
-    // Private properties
-    @IBOutlet weak var cityNameLabel: UILabel!
+    @IBOutlet private weak var countryNameLabel: UILabel!
     
-    @IBOutlet weak var countryNameLabel: UILabel!
+    @IBOutlet private weak var weatherIconImage: UIImageView!
     
-    @IBOutlet weak var weatherIconImage: UIImageView!
+    @IBOutlet private weak var currentTempLabel: UILabel!
     
-    @IBOutlet weak var currentTempLabel: UILabel!
+    @IBOutlet private weak var descriptionLabel: UILabel!
     
-    @IBOutlet weak var descriptionLabel: UILabel!
+    @IBOutlet private weak var humidityLabel: UILabel!
     
-    @IBOutlet weak var humidityLabel: UILabel!
-    
-    @IBOutlet weak var windSpeedLabel: UILabel!
-    
-    
-    /* Old Outlets
-    // icon of the weather
-    @IBOutlet weak var iconImage: UIImageView!
-    
-    // choice of the city
-    @IBAction func cityButton(_ sender: UIBarButtonItem) {
-        
-        displayCity()
-    }
-
-    // current temp at main scrren
-    @IBOutlet weak var currentTemp: UILabel!
-    
-    // chosen city on the screen
-    @IBOutlet weak var cityName: UILabel!
-    */
+    @IBOutlet private weak var windSpeedLabel: UILabel!
     
     // Singletons
     var openWeather = OpenWeatherMap.shared
-    var hud = MBProgressHUD() // call it spinner
+    
+    // Services
+    var spinner = MBProgressHUD()
     var locationManager = CLLocationManager()
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-        
-        // Delegate with openWeather Class
+        // Delegate with openWeatherMap Class
         self.openWeather.delegate = self
         
         // ref's with location manager
@@ -69,10 +46,6 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
-        
-        // Background setting
-        //let bg = UIImage(named: "")
-        //self.view.backgroundColor = UIColor(patternImage: bg!)
     }
    
     // YAGNI
@@ -102,10 +75,10 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
     
     func loadingIndicator() {
         
-        hud.label.text = "Loading..."
-        hud.areDefaultMotionEffectsEnabled = true
-        self.view.addSubview(hud)
-        hud.show(animated: true)
+        spinner.label.text = "Loading..."
+        spinner.areDefaultMotionEffectsEnabled = true
+        self.view.addSubview(spinner)
+        spinner.show(animated: true)
     }
     
     //MARK: OpenWeatherMapDelegate
@@ -114,7 +87,7 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
         
         present(by: self)
         
-        hud.hide(animated: true)
+        spinner.hide(animated: true)
         
         //Codable
         // Getting values from JSON
@@ -158,7 +131,7 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
         
         failureJsonController.addAction(okButton)
         
-        hud.hide(animated: true)
+        spinner.hide(animated: true)
         
         self.present(failureJsonController, animated: true, completion: nil)
     }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="sIh-jC-NVu">
-    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <device id="retina6_5" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
@@ -9,6 +9,36 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--Current Weather View Controller-->
+        <scene sceneID="me0-jw-96c">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="8PH-Km-MSs" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <viewController id="Cic-6E-hsR" customClass="CurrentWeatherViewController" customModule="weatherApp" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Tg6-h2-onK">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="p2v-sK-NHi"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+            </objects>
+            <point key="canvasLocation" x="-442" y="792"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="xL2-6O-T0o">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="eC7-Fq-EPZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <viewController id="5ib-rX-9zm" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Vmr-zf-J1x">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="ceM-AN-VMu"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+            </objects>
+            <point key="canvasLocation" x="374" y="792"/>
+        </scene>
         <!--Forecast-->
         <scene sceneID="boU-b1-hyr">
             <objects>
@@ -78,13 +108,13 @@
                                 <rect key="frame" x="58" y="539" width="90" height="90"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Moscow" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SI8-p0-iLj">
-                                <rect key="frame" x="149.5" y="79" width="115" height="35"/>
+                                <rect key="frame" x="149.66666666666666" y="79" width="114.99999999999997" height="35"/>
                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="30"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="RU" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="m6o-fX-y9Z">
-                                <rect key="frame" x="185.5" y="122" width="43" height="35"/>
+                                <rect key="frame" x="185.66666666666666" y="122" width="43" height="35"/>
                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="30"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -159,7 +189,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ePr-iZ-ZCe" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="463.768115942029" y="-54.241071428571423"/>
+            <point key="canvasLocation" x="523" y="-81"/>
         </scene>
         <!--Current weather-->
         <scene sceneID="P6q-CU-rwV">
@@ -195,7 +225,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="60 m/s" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lm7-n5-HMF">
-                                <rect key="frame" x="261" y="661" width="113" height="42"/>
+                                <rect key="frame" x="260.66666666666669" y="661" width="113" height="42"/>
                                 <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="35"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -207,19 +237,19 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="RU" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Yo3-3f-jP9">
-                                <rect key="frame" x="185.5" y="122" width="43" height="35"/>
+                                <rect key="frame" x="185.66666666666666" y="122" width="43" height="35"/>
                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="30"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="25.09°" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hzw-Qs-UAN">
-                                <rect key="frame" x="90.5" y="357" width="233" height="94"/>
+                                <rect key="frame" x="90.666666666666686" y="357" width="233" height="94"/>
                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="80"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Moscow" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WHg-Bk-ZaL">
-                                <rect key="frame" x="105.5" y="79" width="203" height="35"/>
+                                <rect key="frame" x="105.66666666666667" y="79" width="202.66666666666663" height="35"/>
                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="30"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -264,7 +294,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dip-cc-ESd" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="463.768115942029" y="-661.60714285714278"/>
+            <point key="canvasLocation" x="546" y="-736"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="oBv-Vg-lwS">

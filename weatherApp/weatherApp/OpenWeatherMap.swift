@@ -16,8 +16,6 @@ protocol OpenWeatherMapDelegate {
     func failure()
 }
 
-// Adding this line to test GitHub GreatWorkflow
-
 class OpenWeatherMap {
     // OpenWeatherMap Singleton init
     static var shared = OpenWeatherMap()
@@ -44,6 +42,7 @@ class OpenWeatherMap {
         }
     }
     
+    // Properties of a model
     var forecastCardArray: [ForecastCard] = []
     
     let url = "https://api.openweathermap.org/data/2.5/weather"
@@ -55,6 +54,7 @@ class OpenWeatherMap {
     //also needs to check up converting func (what if request with not the metric unit?)
     let unit = "metric"
     
+    // Properties from JSON
     var cityName: String?
     var countryName: String?
     var cityTemp: Double?
@@ -63,7 +63,6 @@ class OpenWeatherMap {
     }
     
     var description: String?
-//    var currentTime: String
     var iconCode: String?
     var icon: UIImage {
         weatherIcon(iconCode: iconCode ?? "none")
@@ -71,7 +70,7 @@ class OpenWeatherMap {
     var humidity: Double?
     var windSpeed: Double?
     
-    
+    // Fuctions
     func getWeatherFor(_ city: String) {
         
         let params = ["q": city,
@@ -94,7 +93,6 @@ class OpenWeatherMap {
     }
     
     func setRequest(params: [String: Any]?) {
-        
         let dispatchGroup = DispatchGroup()
         
         // Request for current weather
@@ -103,7 +101,6 @@ class OpenWeatherMap {
                    method: .get,
                    parameters: params)
             .responseJSON { json in
-                
                 defer {
                     dispatchGroup.leave()
                 }
@@ -112,14 +109,11 @@ class OpenWeatherMap {
                     self.delegate.failure()
                     return
                 }
-                
             
                 let currentJSON = JSON(data)
-
                 
                 // cross to main thred
                 self.delegate.updateWeatherInfo(weatherJSON: currentJSON)
-                
                 print("Current ended")
         }
         
@@ -213,4 +207,3 @@ class OpenWeatherMap {
         }
     }
 }
-
