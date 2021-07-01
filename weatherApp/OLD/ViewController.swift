@@ -46,6 +46,9 @@ final class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocation
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
+        
+        print("zero first controller at work")
+        
     }
    
     // YAGNI
@@ -79,6 +82,10 @@ final class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocation
         spinner.areDefaultMotionEffectsEnabled = true
         self.view.addSubview(spinner)
         spinner.show(animated: true)
+        print(self.view.subviews)
+        spinner.hide(animated: true)
+        //self.view.subviews.re
+        spinner.removeFromSuperview()
     }
     
     //MARK: OpenWeatherMapDelegate
@@ -88,6 +95,7 @@ final class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocation
         present(by: self)
         
         spinner.hide(animated: true)
+        
         
         //Codable
         // Getting values from JSON
@@ -120,8 +128,8 @@ final class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocation
         }
         
         // for Cheking
-        print(openWeather.cityName ?? "city is not initialized")
-        print(openWeather.cityTemp ?? "temp is not initialized")
+        //print(openWeather.cityName ?? "city is not initialized")
+        //print(openWeather.cityTemp ?? "temp is not initialized")
     }
     
     func failure() {
@@ -139,7 +147,7 @@ final class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocation
     //MARK: CLLocationManagerDelegate
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        print(manager.location ?? "Location is updated, but something wrong with data")
+        //print(manager.location ?? "Location is updated, but something wrong with data")
         
         self.loadingIndicator()
         guard let currentLocation = locations.last, currentLocation.horizontalAccuracy > 0  else { return }
@@ -150,17 +158,21 @@ final class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocation
             let coords = CLLocationCoordinate2D(latitude: currentLocation.coordinate.latitude, longitude: currentLocation.coordinate.longitude)
             self.openWeather.getWeatherFor(coords)
             
-            print("coords: \(coords)")
+            //print("coords: \(coords)")
     }
     
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("There is an error with loc-manager: \(error)")
+    func locationManager(_ manager: CLLocationManager,
+                         didFailWithError error: Error) {
+        //print("There is an error with loc-manager: \(error)")
     }
-    
     
     func present(by vc: UIViewController) {
-        let openWeatherMap = OpenWeatherMap()
-        let module = CurrentWeatherAssembly(openWeatherMap: openWeatherMap)
+        let openWeatherModel = OpenWeatherModel()
+        let serverManager = SereverManager()
+        let locator = Locator()
+        let module = CurrentWeatherAssembly(openWeatherModel: openWeatherModel,
+                                            serverManager: serverManager,
+                                            locator: locator)
         let newVC = module.build()
         
         vc.present(newVC, animated: true, completion: nil)

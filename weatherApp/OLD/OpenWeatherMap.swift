@@ -93,22 +93,24 @@ class OpenWeatherMap {
     }
     
     func setRequest(params: [String: Any]?) {
-        let dispatchGroup = DispatchGroup()
+        //let dispatchGroup = DispatchGroup()
         
         // Request for current weather
-        dispatchGroup.enter()
+        //dispatchGroup.enter()
         AF.request(url,
                    method: .get,
                    parameters: params)
             .responseJSON { json in
                 defer {
-                    dispatchGroup.leave()
+                    //dispatchGroup.leave()
                 }
                 
                 guard json.error == nil, let data = json.data else {
                     self.delegate.failure()
                     return
                 }
+                
+                print("data ", data)
             
                 let currentJSON = JSON(data)
                 
@@ -118,14 +120,14 @@ class OpenWeatherMap {
         }
         
         // Request for forecast weather
-        dispatchGroup.enter()
+        //dispatchGroup.enter()
         AF.request(urlForecast,
                    method: .get,
                    parameters: params)
             .responseJSON { json in
                 
                 defer {
-                    dispatchGroup.leave()
+                    //dispatchGroup.leave()
                 }
                 
                 
@@ -146,12 +148,13 @@ class OpenWeatherMap {
                     }
                 }
                 
-                print("Forecast ended")
+                //print("Forecast ended")
         }
         
-        dispatchGroup.notify(queue: .main) {
-            print("End")
-        }
+//        dispatchGroup.notify(queue: .main) {
+            //print("End")
+//        }
+        print("setRequest ended")
     }
     
     
@@ -180,7 +183,7 @@ class OpenWeatherMap {
     func sendRequest(
         url: URL,
         params: [String: Any],
-        completion: @escaping (Result<Weather, Error>) -> Void
+        completion: @escaping (Result<CurrentWeatherDecoded, Error>) -> Void
     ) {
         AF.request(
             url,
@@ -199,7 +202,7 @@ class OpenWeatherMap {
             }
             
             do {
-                let weather = try JSONDecoder().decode(Weather.self, from: data)
+                let weather = try JSONDecoder().decode(CurrentWeatherDecoded.self, from: data)
                 completion(.success(weather))
             } catch {
                 completion(.failure(error))

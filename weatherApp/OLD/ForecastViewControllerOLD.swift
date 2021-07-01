@@ -13,7 +13,7 @@ import MBProgressHUD
 import CoreLocation
 
 
-class ForecastViewController: UIViewController {
+class ForecastViewControllerOLD: UIViewController {
     
     // Head Labels
     @IBOutlet weak var cityNameLabel: UILabel!
@@ -45,11 +45,9 @@ class ForecastViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
         
-        print(openWeather.forecastCardArray[0].textTimeFormatted)
-        print(openWeather.forecastCardArray[0].tempFormatted)
+        //print(openWeather.forecastCardArray[0].textTimeFormatted)
+        //print(openWeather.forecastCardArray[0].tempFormatted)
         
         // Setting labels of location
         self.cityNameLabel.text = openWeather.cityName
