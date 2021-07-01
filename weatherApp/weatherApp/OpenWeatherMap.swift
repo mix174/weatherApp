@@ -86,35 +86,54 @@ class OpenWeatherMap {
                       "lon": coords.longitude,
                       "units": unit,
                       "appid": apiKey] as [String : Any]
+        
+//        sendRequest(url: url, params: params) { result in
+//            print(result)
+//        }
         setRequest(params: params)
     }
     
     func setRequest(params: [String: Any]?) {
         
+        let dispatchGroup = DispatchGroup()
+        
         // Request for current weather
+        dispatchGroup.enter()
         AF.request(url,
                    method: .get,
                    parameters: params)
             .responseJSON { json in
                 
-                guard json.error == nil else {
+                defer {
+                    dispatchGroup.leave()
+                }
+                
+                guard json.error == nil, let data = json.data else {
                     self.delegate.failure()
                     return
                 }
+                
             
-                let currentJSON = JSON(json.data!)
+                let currentJSON = JSON(data)
+
                 
                 // cross to main thred
-                DispatchQueue.main.async {
-                    self.delegate.updateWeatherInfo(weatherJSON: currentJSON)
-            }
+                self.delegate.updateWeatherInfo(weatherJSON: currentJSON)
+                
+                print("Current ended")
         }
         
         // Request for forecast weather
+        dispatchGroup.enter()
         AF.request(urlForecast,
                    method: .get,
                    parameters: params)
             .responseJSON { json in
+                
+                defer {
+                    dispatchGroup.leave()
+                }
+                
                 
                 guard json.error == nil else {
                     self.delegate.failure()
@@ -132,7 +151,13 @@ class OpenWeatherMap {
                         self.forecastCardArray.append(ForecastCard(dtTime: dt, temp: temp, iconCode: iconCode, textTime: textTime))
                     }
                 }
-            }
+                
+                print("Forecast ended")
+        }
+        
+        dispatchGroup.notify(queue: .main) {
+            print("End")
+        }
     }
     
     
@@ -149,6 +174,43 @@ class OpenWeatherMap {
     func weatherIcon(iconCode: String) -> UIImage {
         guard let image = UIImage(named: iconCode) else { return UIImage(named: "none")! }
         return image
+    }
+    
+    /*  Review  */
+    
+    enum ServerError: Error {
+        case jsonError
+        case dataNil
+    }
+    
+    func sendRequest(
+        url: URL,
+        params: [String: Any],
+        completion: @escaping (Result<Weather, Error>) -> Void
+    ) {
+        AF.request(
+            url,
+            method: .get,
+            parameters: params
+        ).responseJSON { json in
+            
+            guard json.error == nil else {
+                completion(.failure(ServerError.jsonError))
+                return
+            }
+            
+            guard let data = json.data else {
+                completion(.failure(ServerError.dataNil))
+                return
+            }
+            
+            do {
+                let weather = try JSONDecoder().decode(Weather.self, from: data)
+                completion(.success(weather))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
 }
 
