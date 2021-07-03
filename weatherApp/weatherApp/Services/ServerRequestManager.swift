@@ -8,13 +8,9 @@
 import Alamofire
 
 
-final class SereverManager {
-//    Singleton
-    static let shared = SereverManager()
-    
-//    Yagni
-    weak var currentPresenter: CurrentWeatherPresenterProtocol?
-
+final class ServerManager {
+    // Singleton
+    static let shared = ServerManager()
     
     // URL и параметры
     let token = "45edc494a20ba962104df229852f3058"
@@ -22,61 +18,80 @@ final class SereverManager {
     let forecastUrl = "https://api.openweathermap.org/data/2.5/forecast"
     let unitsMetric = "metric"
     
-//    Запрос и передача текущей погоды
-    func getCurrentWeather(coords: Coordinates, completionHandler: @escaping (CurrentWeatherDecoded) -> Void) {
-//        Параметры для URL
+    // Enum c ошибками для запросов о погоде с сервера, обработки JSON и конвертации JSON в Decodable
+    enum ServerErrorList: Error {
+        case jsonError
+        case dataNil
+    }
+    
+    // Запрос и передача текущей погоды
+    func getCurrentWeather(coords: Coordinates,
+                           completion: @escaping (Result<CurrentWeatherDecodable, Error>) -> Void) {
+        // Параметры для URL
         let params = ["lat": coords.latitude,
                       "lon": coords.longitude,
                       "units": unitsMetric,
                       "appid": token] as [String : Any]
         
-//        Решить вопрос с self
         AF.request(currentUrl,
                    method: .get,
                    parameters: params)
-            .responseJSON { [self] json in
-                
-                guard json.error == nil,
-                      let data = json.data
-                else {
-                    print("error in JSON in model")
+            .responseJSON { json in // self ни на что не ссылался, поэтому был удален
+                // проверка ответа с сервера
+                guard json.error == nil else {
+                    print("error in JSON: \(String(describing: json.error?.errorDescription))")
+                    completion(.failure(ServerErrorList.jsonError))
                     return
                 }
-//                Убрать implicit
-                let currentData = try! JSONDecoder().decode(CurrentWeatherDecoded.self, from: data)
-                
-//                Передача структуры данных в Presentor
-                completionHandler(currentData)
+                // проверка данных в JSON
+                guard let data = json.data else {
+                    print("json.data is nil")
+                    completion(.failure(ServerErrorList.dataNil))
+                    return
+                }
+                // Конвертация данных из JSON в Decodable
+                do {
+                    let currentData = try JSONDecoder().decode(CurrentWeatherDecodable.self, from: data)
+                    completion(.success(currentData)) // передача currentData в completion
+                } catch {
+                    completion(.failure(error))
+                }
             }
     }
-//    Запрос и передача прогнозной погоды
-    func getForecastWeather(coords: Coordinates, completionHandler: @escaping (ForecastWeatherDecoded) -> Void) {
-//        Параметры для URL
+    // Запрос и передача прогнозной погоды
+    func getForecastWeather(coords: Coordinates,
+                            completion: @escaping (Result<ForecastWeatherDecodable, Error>) -> Void) {
+        // Параметры для URL
         let params = ["lat": coords.latitude,
                       "lon": coords.longitude,
                       "units": unitsMetric,
                       "appid": token] as [String : Any]
         
-//        Решить вопрос с self
         AF.request(forecastUrl,
                    method: .get,
                    parameters: params)
-            .responseJSON { [self] json in
-                
-                guard json.error == nil,
-                      let data = json.data
-                else {
-                    print("error in JSON in model")
+            .responseJSON { json in // self ни на что не ссылался, поэтому был удален
+                // Проверка ответа с сервера
+                guard json.error == nil else {
+                    completion(.failure(ServerErrorList.jsonError))
                     return
                 }
-//                Убрать implicit
-                let forecastData = try! JSONDecoder().decode(ForecastWeatherDecoded.self, from: data)
-                
-//                Передача структуры данных в Presentor
-                completionHandler(forecastData)
+                // Проверка данных в JSON
+                guard let data = json.data else {
+                    completion(.failure(ServerErrorList.dataNil))
+                    return
+                }
+                // Конвертация данных из JSON в Decodable
+                do {
+                    let forecastData = try JSONDecoder().decode(ForecastWeatherDecodable.self, from: data)
+                    completion(.success(forecastData)) // передача foracastData в completion
+                } catch {
+                    completion(.failure(error))
+                }
             }
     }
-//    Запрос и передача текущей погоды по запросу города/страны
+
+    // Запрос и передача текущей погоды по запросу города/страны
     
-//    Запрос и передача прогнозной погоды по запросу города/страны
+    // Запрос и передача прогнозной погоды по запросу города/страны
 }

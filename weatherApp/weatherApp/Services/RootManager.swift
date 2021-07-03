@@ -7,7 +7,7 @@
 
 import UIKit
 
-class RootManager {
+final class RootManager {
     // Singleton
     static let shared = RootManager()
     
@@ -19,7 +19,7 @@ class RootManager {
     func start(window: UIWindow) {
         
         let openWeatherModel = OpenWeatherModel()
-        let serverManager = SereverManager.shared
+        let serverManager = ServerManager.shared
         let locator = Locator.shared
         let module = CurrentWeatherAssembly(openWeatherModel: openWeatherModel,
                                             serverManager: serverManager,
@@ -40,6 +40,7 @@ class RootManager {
     func moveToCurrentView() {
         print("moveToCurrentView in Root Manager")
         forecastVCroot?.dismiss(animated: true, completion: nil)
+        forecastVCroot = nil // Также надо удалить все аутлеты на вью тд
     }
     
 }

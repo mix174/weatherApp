@@ -10,11 +10,11 @@ import UIKit
 final class CurrentWeatherAssembly {
     
     private let openWeatherModel: OpenWeatherModel
-    private let serverManager: SereverManager
+    private let serverManager: ServerManager
     private let locator: Locator
     
     init(openWeatherModel: OpenWeatherModel,
-         serverManager: SereverManager,
+         serverManager: ServerManager,
          locator: Locator) {
         self.openWeatherModel = openWeatherModel
         self.serverManager = serverManager
@@ -26,10 +26,6 @@ final class CurrentWeatherAssembly {
             openWeatherModel: openWeatherModel,
             serverManager: serverManager,
             locator: locator)
-        
-//        Необязательно, так как пока синглтоны. Можно переделать
-        serverManager.currentPresenter = presenter
-        locator.currentPresenter = presenter
         
 //        Присвоение вьюконтролера к вью в сториБорде
         let storyboard = UIStoryboard(name: "Main", bundle: nil)

@@ -7,41 +7,51 @@
 
 import CoreLocation
 
-// можно ли без ObservableObject?
-final class Locator: NSObject, ObservableObject, CLLocationManagerDelegate {
+protocol LocatorDelegate {
+    func getCurrentLocation(_ completion: @escaping (_ coords: Coordinates) -> Void)
+}
+
+// можно ли без ObservableObject? - да, можно
+final class Locator: NSObject, CLLocationManagerDelegate, LocatorDelegate {
     
     // Singleton
     static let shared = Locator()
     // Connection with Core LocationManager
     private var locationManager = CLLocationManager()
     
-//    Yagni
-    weak var currentPresenter: CurrentWeatherPresenterProtocol?
+    // Хранение completion для requestLocation
+    private var completionHandler: ((_ coords: Coordinates) -> Void)?
     
-//    YAGNI ?? Cвойство хранения последней полученной локации
-    var lastKnownLocation: Coordinates?
     
-    func startUpdatingLocation() {
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.startUpdatingLocation()
+    func getCurrentLocation(_ completion: @escaping (_ coords: Coordinates) -> Void) {
+        // костыль проверки на установленность Locator в качестве делегата для CLLocationManager
+        if locationManager.delegate == nil {
+            locationManager.delegate = self
+        }
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest // настройка точности определения локации
+        // все, что выше в данной функции, нужно перенести в отдельное место (init)
+        
+        completionHandler = completion // сохранение completion
+        locationManager.requestWhenInUseAuthorization() // запрос на права на отслеживание локации
+        locationManager.requestLocation() // запрос на локацию
     }
     
+//    MARK: CLLocationManagerDelegate funcs
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        // optinal binding крайнего значение локации + проверка на точность
+        guard let currentLocation = locations.last, currentLocation.horizontalAccuracy > 0  else {
+            self.locationManager.requestLocation() // повторный запрос на локацию, если условие в guard не соблюдено
+            return
+        }
         
-        guard let currentLocation = locations.last, currentLocation.horizontalAccuracy > 0  else { return }
-        
-        // // YAGNI ?? прекратить отслеживания для экономии заряда
-        manager.stopUpdatingLocation()
-        
-        let coords = Coordinates(latitude: currentLocation.coordinate.latitude, longitude: currentLocation.coordinate.longitude)
-        
-        // YAGNI ??
-        print("coords: \(coords)")
-        self.lastKnownLocation = coords
-        
-        currentPresenter?.currentLocationUpdated(coords: coords)
+        let coords = Coordinates(latitude: currentLocation.coordinate.latitude,
+                                 longitude: currentLocation.coordinate.longitude) // Конвертация полученной локации в структуру Coordinates
+        // передача локации в completion и его "запуск"
+        completionHandler?(coords)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("CLLocationManager did Fail With Error: \(error)")
     }
 //    YAGNI?
 //    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
