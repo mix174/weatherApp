@@ -9,8 +9,6 @@ import Alamofire
 
 
 final class ServerManager {
-    // Singleton
-    static let shared = ServerManager()
     
     // URL и параметры
     let token = "45edc494a20ba962104df229852f3058"
@@ -25,8 +23,8 @@ final class ServerManager {
     }
     
     // Запрос и передача текущей погоды
-    func getCurrentWeather(coords: Coordinates,
-                           completion: @escaping (Result<CurrentWeatherDecodable, Error>) -> Void) {
+    func getCurrentData(coords: Coordinates,
+                           completion: @escaping (Result<CurrentDataDecodable, Error>) -> Void) {
         // Параметры для URL
         let params = ["lat": coords.latitude,
                       "lon": coords.longitude,
@@ -51,7 +49,7 @@ final class ServerManager {
                 }
                 // Конвертация данных из JSON в Decodable
                 do {
-                    let currentData = try JSONDecoder().decode(CurrentWeatherDecodable.self, from: data)
+                    let currentData = try JSONDecoder().decode(CurrentDataDecodable.self, from: data)
                     completion(.success(currentData)) // передача currentData в completion
                 } catch {
                     completion(.failure(error))
@@ -59,8 +57,8 @@ final class ServerManager {
             }
     }
     // Запрос и передача прогнозной погоды
-    func getForecastWeather(coords: Coordinates,
-                            completion: @escaping (Result<ForecastWeatherDecodable, Error>) -> Void) {
+    func getForecastData(coords: Coordinates,
+                            completion: @escaping (Result<ForecastDataDecodable, Error>) -> Void) {
         // Параметры для URL
         let params = ["lat": coords.latitude,
                       "lon": coords.longitude,
@@ -83,7 +81,7 @@ final class ServerManager {
                 }
                 // Конвертация данных из JSON в Decodable
                 do {
-                    let forecastData = try JSONDecoder().decode(ForecastWeatherDecodable.self, from: data)
+                    let forecastData = try JSONDecoder().decode(ForecastDataDecodable.self, from: data)
                     completion(.success(forecastData)) // передача foracastData в completion
                 } catch {
                     completion(.failure(error))

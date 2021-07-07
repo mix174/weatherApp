@@ -9,21 +9,14 @@ import UIKit
 
 final class CurrentWeatherAssembly {
     
-    private let openWeatherModel: OpenWeatherModel
-    private let serverManager: ServerManager
-    private let locator: Locator
+    private let сurrentDataModel = CurrentDataModel()
+    private let serverManager = ServerManager()
+    private let locator = Locator()
     
-    init(openWeatherModel: OpenWeatherModel,
-         serverManager: ServerManager,
-         locator: Locator) {
-        self.openWeatherModel = openWeatherModel
-        self.serverManager = serverManager
-        self.locator = locator
-    }
 //    Метод для создания вьюКонтроллера и соединения с презентером и моделью
     func build() -> UIViewController {
         let presenter = CurrentWeatherPresenter(
-            openWeatherModel: openWeatherModel,
+            currentDataModel: сurrentDataModel,
             serverManager: serverManager,
             locator: locator)
         

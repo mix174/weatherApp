@@ -10,7 +10,7 @@ import UIKit
 protocol CurrentWeatherPresenterProtocol: class {
     func viewDidLoad()
     
-    func getWeatherFor(city: String)
+    func getDataFor(city: String)
     
     func moveToForecastView()
 }
@@ -19,18 +19,17 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
     
     // Связь с сервисами
     weak var currentView: CurrentWeatherViewControllerProtocol?
-    private let openWeatherModel: OpenWeatherModel
+    private let openWeatherModel: CurrentDataModel
     private let serverManager: ServerManager
-    private let locator: LocatorDelegate?
+    private let locator: Locator
     
-    init(openWeatherModel: OpenWeatherModel,
+    init(currentDataModel: CurrentDataModel,
          serverManager: ServerManager,
          locator: Locator) {
-        self.openWeatherModel = openWeatherModel
+        self.openWeatherModel = currentDataModel
         self.serverManager = serverManager
         self.locator = locator
     }
-
     
     // Загрузка экрана с текущей погодой
     func viewDidLoad() {
@@ -41,38 +40,46 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
 
         
         // Получить данные о текущей локации
-        locator?.getCurrentLocation() { coords in
+        locator.getLocation() { coords in
             print(coords)
-            self.getServerWeatherData(coords: coords)
+            self.getServerData(coords: coords)
         }
         
         // Передать данные в вью
-        
         
         // Спрятать значок загрузки после загрузки данных с текущей погодой с сервера
     }
     
     
     // Загрузить данные с текущей погодой с сервера через ServerRequestManager
-    func getServerWeatherData(coords: Coordinates) {
-        serverManager.getCurrentWeather(coords: coords) { result in
-            print("Current Data: updated")
+    func getServerData(coords: Coordinates) {
+        serverManager.getCurrentData(coords: coords) { [weak self] result in
+            // self optinal bindinig
+            guard let self = self else { return }
             
+            print("Current Data: updated")
+            // Обработка результата
             switch result {
             case .success(let currentData):
-                self.updateCurrentDataOnView(currentData: currentData)
+                // Передача данных в функцию обновления экрана
+                self.updateOnView(currentData: currentData)
             case .failure(let error):
                 print("Error at current accured:", error.localizedDescription)
             }
-            
         }
-        serverManager.getForecastWeather(coords: coords) { result in
-            print("Forecast Data: updated")
+        
+        serverManager.getForecastData(coords: coords) { [weak self] result in
+            // self optinal bindinig
+            guard let self = self else { return }
             
+            print("Forecast Data: updated")
+            // Обработка результата
             switch result {
             case .success(let forecastData):
+                // Передача данных в DataManager для прогнозного экрана
                 DataManager.shared.forecastData = forecastData // можно отложить
-                self.updateForecastDataOnView(forecastData: forecastData)
+                // Передача данных в функцию обновления экрана
+                self.updateOnView(forecastData: forecastData)
             case .failure(let error):
                 print("Error at forecast accured:", error.localizedDescription)
             }
@@ -80,15 +87,15 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
     }
     
     // Обновление Вью
-    func updateCurrentDataOnView(currentData: CurrentWeatherDecodable) {
+    func updateOnView(currentData: CurrentDataDecodable) {
         print("Функция обновления данных в презентере на вью")
         print("current windSpeed: ", currentData.wind.windSpeed)
+        print("current main: ", currentData.weather[0].mainCondition)
         self.currentView?.hideSpinner()
-//            self.currentView?.setBackground(backgroundImage: currentData.weather[0].backgroundImage)
-//            self.currentView?.setBackground(imageName: currentData.weather[0].backgroundImageName)
+        self.currentView?.setBackground(backgroundImage: currentData.weather[0].backgroundImage)
 
     }
-    func updateForecastDataOnView(forecastData: ForecastWeatherDecodable) {
+    func updateOnView(forecastData: ForecastDataDecodable) {
         print("Функция обновления данных в презентере на вью")
         print("forecast temp: ", forecastData.partWeather[3].main.temp)
     }
@@ -105,7 +112,7 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
     
     // #Later
     // Получение инфы о погоде в городе по запросу
-    func getWeatherFor(city: String) {
+    func getDataFor(city: String) {
     }
     
     

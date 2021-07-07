@@ -7,29 +7,25 @@
 
 import CoreLocation
 
-protocol LocatorDelegate {
-    func getCurrentLocation(_ completion: @escaping (_ coords: Coordinates) -> Void)
-}
 
 // можно ли без ObservableObject? - да, можно
-final class Locator: NSObject, CLLocationManagerDelegate, LocatorDelegate {
+final class Locator: NSObject, CLLocationManagerDelegate {
     
-    // Singleton
-    static let shared = Locator()
     // Connection with Core LocationManager
-    private var locationManager = CLLocationManager()
+    private let locationManager: CLLocationManager
+    
+    override init() {
+        self.locationManager = CLLocationManager()
+        super.init()
+        // Дополнительная настройка CLLocationManager
+        locationManager.delegate = self // назначение объекта данного класса делегатом для CLLocationManager
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest // настройка точности определения локации
+    }
     
     // Хранение completion для requestLocation
     private var completionHandler: ((_ coords: Coordinates) -> Void)?
     
-    
-    func getCurrentLocation(_ completion: @escaping (_ coords: Coordinates) -> Void) {
-        // костыль проверки на установленность Locator в качестве делегата для CLLocationManager
-        if locationManager.delegate == nil {
-            locationManager.delegate = self
-        }
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest // настройка точности определения локации
-        // все, что выше в данной функции, нужно перенести в отдельное место (init)
+    func getLocation(_ completion: @escaping (_ coords: Coordinates) -> Void) {
         
         completionHandler = completion // сохранение completion
         locationManager.requestWhenInUseAuthorization() // запрос на права на отслеживание локации
