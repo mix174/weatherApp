@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-struct CurrentDataDecodable: Codable {
+struct CurrentWeatherDecodable: Codable {
     // Корневая структура JSON-ответа с сервера (weather)
     let cityId: Int?
     let city: String?
@@ -32,157 +32,64 @@ struct CurrentDataDecodable: Codable {
     
     // Вложенная структура Weather
     struct Weather: Codable {
-        let mainCondition: MainCondition
+        let mainCondition: MainCondition?
         let description: String
-        let iconCode: IconCode
+        let iconCode: IconCode?
 
         enum CodingKeys: String, CodingKey {
             case mainCondition = "main"
             case description
             case iconCode = "icon"
         }
+        
         // Список состояний для mainCondition
-        enum MainCondition: Codable {
-            case clear
-            case clouds
-            case rain
-            case snow
-            case drizzle
-            case thunderstorm
-            case mist
-            case notSet // по умолчанию при ошибке или аномальном состоянии
-            
-            init(from decoder: Decoder) throws {
-                let container = try decoder.singleValueContainer()
-                switch try container.decode(String.self) {
-                // clear
-                case "Clear" :
-                    self = .clear
-                // clouds
-                case "Clouds" :
-                    self = .clouds
-                // rain
-                case "Rain" :
-                    self = .rain
-                // snow
-                case "Snow" :
-                    self = .snow
-                // drizzle
-                case "Drizzle" :
-                    self = .drizzle
-                // thunderstorm
-                case "Thunderstorm" :
-                    self = .thunderstorm
-                // Все варианты ниже обладают единым смыслом для mist
-                case "Mist" :
-                    self = .mist
-                case "Smoke" :
-                    self = .mist
-                case "Haze" :
-                    self = .mist
-                case "Dust" :
-                    self = .mist
-                case "Fog" :
-                    self = .mist
-                case "Sand" :
-                    self = .mist
-                case "Ash" :
-                    self = .mist
-                case "Squall" :
-                    self = .mist
-                case "Tornado" :
-                    self = .mist
-                default:
-                    self = .notSet
-                }
-            }
-            // так как codable = decodable + encodable. мб перейти на decodable?
-            // если нет, то дополнить cases
-            func encode(to encoder: Encoder) throws {
-                var container = encoder.singleValueContainer()
-                switch self {
-                case .clear :
-                    try container.encode("Clear")
-                default: fatalError() // Так в рефе, на что поменять?
-                }
-            }
+        enum MainCondition: String, Codable {
+            case clear = "Clear"
+            case clouds = "Clouds"
+            case rain = "Rain"
+            case snow = "Snow"
+            case drizzle = "Drizzle"
+            case thunderstorm = "Thunderstorm"
+            case mist = "Mist"
+            case smoke = "Smoke"
+            case haze = "Haze"
+            case dust = "Dust"
+            case fog = "Fog"
+            case sand = "Sand"
+            case ash = "Ash"
+            case squall = "Squall"
+            case tornado = "Tornado"
         }
+        
         // Список состояний для iconCode
-        enum IconCode: Codable {
-            case clearSky
-            case fewClouds
-            case scatteredClouds
-            case brokenClouds
-            case showerRain
-            case rain
-            case thunderstorm
-            case snow
-            case mist
-            case notSet // по умолчанию при ошибке или аномальном состоянии
-            
-            init(from decoder: Decoder) throws {
-                let container = try decoder.singleValueContainer()
-                switch try container.decode(String.self) {
-                // clearSky
-                case "01d" :
-                    self = .clearSky
-                case "01n" :
-                    self = .clearSky
-                // fewClouds
-                case "02d" :
-                    self = .fewClouds
-                case "02n" :
-                    self = .fewClouds
-                // scatteredClouds
-                case "03d" :
-                    self = .scatteredClouds
-                case "03n" :
-                    self = .scatteredClouds
-                // brokenClouds
-                case "04d" :
-                    self = .brokenClouds
-                case "04n" :
-                    self = .brokenClouds
-                // showerRain
-                case "09d" :
-                    self = .showerRain
-                case "09n" :
-                    self = .showerRain
-                // rain
-                case "10d" :
-                    self = .rain
-                case "10n" :
-                    self = .rain
-                // thunderstorm
-                case "11d" :
-                    self = .thunderstorm
-                case "11n" :
-                    self = .thunderstorm
-                // snow
-                case "13d" :
-                    self = .snow
-                case "13n" :
-                    self = .snow
-                // mist
-                case "50d" :
-                    self = .mist
-                case "50n" :
-                    self = .mist
-                // notSet
-                default :
-                    self = .notSet
-                }
-            }
-            // так как codable = decodable + encodable. мб перейти на decodable?
-            // если нет, то дополнить cases
-            func encode(to encoder: Encoder) throws {
-                var container = encoder.singleValueContainer()
-                switch self {
-                case .clearSky :
-                    try container.encode("01d")
-                default: fatalError() // Так в рефе, на что поменять?
-                }
-            }
+        enum IconCode: String, Codable {
+            // Солнечно
+            case clearSkyDay = "01d"
+            case clearSkyNight = "01n"
+            // Преимущественно солнечно
+            case fewCloudsDay = "02d"
+            case fewCloudsNight = "02n"
+            // Облачно
+            case scatteredCloudsDay = "03d"
+            case scatteredCloudsNight = "03n"
+            // Преимущественно облачно
+            case brokenCloudsDay = "04d"
+            case brokenCloudsNight = "04n"
+            // Дождь
+            case rainDay = "10d"
+            case rainNight = "10n"
+            // Ливень
+            case showerRainDay = "09d"
+            case showerRainNight = "09n"
+            // Гроза
+            case thunderstormDay = "11d"
+            case thunderstormNight = "11n"
+            // Снег
+            case snowDay = "13d"
+            case snowNight = "13n"
+            // Туман
+            case mistDay = "50d"
+            case mistNight = "50n"
         }
     }
     // Вложенная структура Main
@@ -225,12 +132,12 @@ struct CurrentDataDecodable: Codable {
     }
 }
 
-struct ForecastDataDecodable: Codable {
+struct ForecastWeatherDecodable: Codable {
     // Корневая структура JSON-ответа с сервера (forecast)
     
     // Вложенная структура list (массив прогнозных значений с разницей в 3 часа, в массиве 40 значений).
     // Структура декодируется с помощью структуры для основной погоды так как все значения совпадают, за искл. country в Sys.
-    let partWeather: [CurrentDataDecodable]
+    let partWeather: [CurrentWeatherDecodable]
     let cityForecast: CityForecast
     
     enum CodingKeys: String, CodingKey {
@@ -253,29 +160,98 @@ struct ForecastDataDecodable: Codable {
 
 // дополнительное свойство для извлечения картинки для фона
 // в дальнейшем нужно дополнить свойством для извлечения иконки погоды
-extension CurrentDataDecodable.Weather {
-    // Computed Property структуры Weather, для извлечения картинки во вьюКонтроллере
-    var backgroundImage: UIImage! {
-        
+extension CurrentWeatherDecodable.Weather {
+    // Computed Property структуры Weather, для извлечения картинки для фона во вьюКонтроллере
+    // Доделать, когда будут доступны картинки
+    var backgroundImage: UIImage? {
         switch mainCondition {
-        case .clear :
+        case .clear:
             return UIImage(named: "BG-GoodWeather")
-        case .clouds :
+        case .clouds:
             return UIImage(named: "BG-BadWeather")
-        case .rain :
+        case .rain:
             return UIImage(named: "BG-NormalWeather")
-        case .snow :
+        case .snow:
             return UIImage(named: "BG-NormalWeather")
-        case .drizzle :
+        case .drizzle:
             return UIImage(named: "BG-NormalWeather")
-        case .thunderstorm :
+        case .thunderstorm:
             return UIImage(named: "BG-NormalWeather")
-        case .mist :
+        case .mist:
             return UIImage(named: "BG-NormalWeather")
-        case .notSet :
+        case .smoke:
+            return UIImage(named: "BG-NormalWeather")
+        case .haze:
+            return UIImage(named: "BG-NormalWeather")
+        case .dust:
+            return UIImage(named: "BG-NormalWeather")
+        case .fog:
+            return UIImage(named: "BG-NormalWeather")
+        case .sand:
+            return UIImage(named: "BG-NormalWeather")
+        case .ash:
+            return UIImage(named: "BG-NormalWeather")
+        case .squall:
+            return UIImage(named: "BG-NormalWeather")
+        case .tornado:
+            return UIImage(named: "BG-NormalWeather")
+            // свитч просит case .none, так как mainCondition optinal (?)
+        case .none:
             return UIImage(named: "BG-NormalWeather")
         }
     }
-    // Later
-    // var backgroundImage: UIImage! {}
+    // Computed Property структуры Weather, для извлечения картинки для иконки во вьюКонтроллере
+    // Доделать, когда будут доступны иконки
+    var iconImage: UIImage? {
+        switch iconCode {
+        // Солнечно
+        case .clearSkyDay:
+            return UIImage(named: "")
+        case .clearSkyNight:
+            return UIImage(named: "")
+        // Преимущественно солнечно
+        case .fewCloudsDay:
+            return UIImage(named: "")
+        case .fewCloudsNight:
+            return UIImage(named: "")
+        // Облачно
+        case .scatteredCloudsDay:
+            return UIImage(named: "")
+        case .scatteredCloudsNight:
+            return UIImage(named: "")
+        // Преимущественно облачно
+        case .brokenCloudsDay:
+            return UIImage(named: "")
+        case .brokenCloudsNight:
+            return UIImage(named: "")
+        // Дождь
+        case .rainDay:
+            return UIImage(named: "")
+        case .rainNight:
+            return UIImage(named: "")
+        // Ливень
+        case .showerRainDay:
+            return UIImage(named: "")
+        case .showerRainNight:
+            return UIImage(named: "")
+        // Гроза
+        case .thunderstormDay:
+            return UIImage(named: "")
+        case .thunderstormNight:
+            return UIImage(named: "")
+        // Снег
+        case .snowDay:
+            return UIImage(named: "")
+        case .snowNight:
+            return UIImage(named: "")
+        // Туман
+        case .mistDay:
+            return UIImage(named: "")
+        case .mistNight:
+            return UIImage(named: "")
+        // свитч просит case .none, так как iconCode optinal (?)
+        case .none:
+            return UIImage(named: "")
+        }
+    }
 }
