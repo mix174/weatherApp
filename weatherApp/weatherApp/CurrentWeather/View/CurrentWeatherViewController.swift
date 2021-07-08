@@ -12,6 +12,7 @@ import MBProgressHUD
 protocol CurrentWeatherViewControllerProtocol: class {
     func showSpinner()
     func hideSpinner()
+    func setBackground(backgroundImage: UIImage)
 }
 
 final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewControllerProtocol {
@@ -20,14 +21,24 @@ final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewCo
     var presenter: CurrentWeatherPresenterProtocol?
     
     // Navigation Buttoms
-    @IBAction func toForecastViewButtom(_ sender: UIButton) {
-        print("show Forecast buttom entered")
+    @IBAction func moveToForecastView(_ sender: UIButton) {
+        print("forecastButton pressed")
         self.presenter?.moveToForecastView()
     }
     
-    // Loading spinner init in property
-    var spinner = MBProgressHUD(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+    // Spinner check - временная проверка
+    @IBAction func spinnerCheck(_ sender: UIButton) {
+        showSpinner()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [self] in
+            showSpinner()
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) { [self] in
+            hideSpinner()
+        }
+    }
     
+    // Loading spinner init in property
+    let spinner = MBProgressHUD(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
     
     // Main action
     override func viewDidLoad() {
@@ -35,12 +46,25 @@ final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewCo
         print("куррент-вью загрузился")
         presenter?.viewDidLoad()
         
-        view.backgroundColor = UIColor.red
-        
     }
-    
+    // Background Setup — нужно сделать выбор между методом
+    func setBackground(backgroundImage: UIImage) {
+
+        let imageView = UIImageView(frame: view.bounds)
+        imageView.contentMode =  .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.image = backgroundImage
+        imageView.center = view.center
+        view.addSubview(imageView)
+        self.view.sendSubviewToBack(imageView)
+    }
+
     // Funcs for spinner
     func showSpinner() {
+        guard spinner.alpha == 0 else {
+            print("spinner is alredy showed")
+            return
+        }
         spinner.areDefaultMotionEffectsEnabled = true
         self.view.addSubview(spinner)
         spinner.show(animated: true)
@@ -50,7 +74,5 @@ final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewCo
         spinner.hide(animated: true)
         spinner.removeFromSuperview()
         print("spinner спрятан")
-        print(self.view.subviews)
     }
-    
 }
