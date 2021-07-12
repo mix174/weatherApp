@@ -13,6 +13,7 @@ protocol CurrentWeatherViewControllerProtocol: class {
     func showSpinner()
     func hideSpinner()
     func setBackground(backgroundImage: UIImage)
+    func failureLocation()
 }
 
 final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewControllerProtocol {
@@ -74,5 +75,23 @@ final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewCo
         spinner.hide(animated: true)
         spinner.removeFromSuperview()
         print("spinner спрятан")
+    }
+    
+    // Функция отображения ошибки (требует доработки)
+    func failureLocation() {
+        let failureController = UIAlertController(title: "Ошибка", message: "Проблема с локацией", preferredStyle: .alert)
+        
+        let tryAgain = UIAlertAction(title: "Перезапустить локацию", style: .default) { [weak self] _ in
+            self?.presenter?.getLocation()
+        }
+        let showHomeCity = UIAlertAction(title: "Показать домашний регион", style: .default) { [weak self] _ in
+            // требует доработки
+            self?.presenter?.getWeatherFor(city: "Moscow")
+        }
+        
+        failureController.addAction(tryAgain)
+        failureController.addAction(showHomeCity)
+        
+        self.present(failureController, animated: true, completion: nil)
     }
 }

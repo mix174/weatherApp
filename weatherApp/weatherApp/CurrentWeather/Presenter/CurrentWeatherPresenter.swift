@@ -9,6 +9,7 @@ import UIKit
 
 protocol CurrentWeatherPresenterProtocol: class {
     func viewDidLoad()
+    func getLocation()
     
     func getWeatherFor(city: String)
     
@@ -56,8 +57,10 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
                 self.getServerData(coords: coords)
             case .failure(let error):
                 print("Error at location accured:", error.localizedDescription)
-                // Перезапуск функции обновления погоды
-                self.getLocation()
+                // спрятать спиннер
+                self.currentView?.hideSpinner()
+                // Показать пользователю ошибку
+                self.currentView?.failureLocation()
             }
         }
     }
@@ -119,16 +122,11 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
         RootManager.shared.moveToForecastView()
     }
     
-    
-    
-    
-    
-    
     // #Later
     // Получение инфы о погоде в городе по запросу
     func getWeatherFor(city: String) {
+        print("func of getting weather for \(city) is not ready yet")
     }
-    
     
 }
 
