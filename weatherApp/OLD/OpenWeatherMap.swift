@@ -11,6 +11,8 @@ import Alamofire
 import SwiftyJSON
 import CoreLocation
 
+// MARK: !!ЧЕРНОВИК!! (Старый файл)
+
 protocol OpenWeatherMapDelegate {
     func updateWeatherInfo(weatherJSON: JSON)
     func failure()
@@ -86,9 +88,9 @@ class OpenWeatherMap {
                       "units": unit,
                       "appid": apiKey] as [String : Any]
         
-//        sendRequest(url: url, params: params) { result in
-//            print(result)
-//        }
+        sendRequest(url: url, params: params) { result in
+            print(result)
+        }
         setRequest(params: params)
     }
     
@@ -181,9 +183,9 @@ class OpenWeatherMap {
     }
     
     func sendRequest(
-        url: URL,
+        url: String,
         params: [String: Any],
-        completion: @escaping (Result<CurrentWeatherDecoded, Error>) -> Void
+        completion: @escaping (Result<CurrentWeatherDecodable, Error>) -> Void
     ) {
         AF.request(
             url,
@@ -202,7 +204,7 @@ class OpenWeatherMap {
             }
             
             do {
-                let weather = try JSONDecoder().decode(CurrentWeatherDecoded.self, from: data)
+                let weather = try JSONDecoder().decode(CurrentWeatherDecodable.self, from: data)
                 completion(.success(weather))
             } catch {
                 completion(.failure(error))
@@ -210,3 +212,33 @@ class OpenWeatherMap {
         }
     }
 }
+
+// старое из LocationManager
+// Хранение completion для requestLocation
+
+//private var completionHandler: ((_ coords: Coordinates) -> Void)?
+//
+//func getLocation(_ completion: @escaping (_ coords: Coordinates) -> Void) {
+//
+//    completionHandler = completion // сохранение completion
+//    locationManager.requestWhenInUseAuthorization() // запрос на права на отслеживание локации
+//    locationManager.requestLocation() // запрос на локацию
+//}
+//
+////    MARK: CLLocationManagerDelegate funcs
+//func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+//    // optinal binding крайнего значение локации + проверка на точность
+//    guard let currentLocation = locations.last, currentLocation.horizontalAccuracy > 0  else {
+//        self.locationManager.requestLocation() // повторный запрос на локацию, если условие в guard не соблюдено
+//        return
+//    }
+//
+//    let coords = Coordinates(latitude: currentLocation.coordinate.latitude,
+//                             longitude: currentLocation.coordinate.longitude) // Конвертация полученной локации в структуру Coordinates
+//    // передача локации в completion и его "запуск"
+//    completionHandler?(coords)
+//}
+//
+//func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+//    print("CLLocationManager did Fail With Error: \(error)")
+//}

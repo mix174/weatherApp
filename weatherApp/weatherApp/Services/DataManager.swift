@@ -12,5 +12,5 @@ final class DataManager {
     static let shared = DataManager()
     
     //Хранение данных
-    var forecastData: ForecastDataDecodable?
+    var forecastWeather: ForecastWeatherDecodable?
 }

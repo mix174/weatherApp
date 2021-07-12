@@ -14,9 +14,9 @@ final class ForecastWeatherPresenter: ForecastWeatherPresenterProtocol {
     
     // Связь с сервисами
     weak var forecastView: ForecastWeatherViewControllerProtocol?
-    private let forecastWeatherModel: ForecastDataModel
+    private let forecastWeatherModel: ForecastWeatherModel
     
-    init(forecastDataModel: ForecastDataModel) {
+    init(forecastDataModel: ForecastWeatherModel) {
         self.forecastWeatherModel = forecastDataModel
     }
 

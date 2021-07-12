@@ -12,6 +12,7 @@ import SwiftyJSON
 import MBProgressHUD
 import CoreLocation
 
+// MARK: !!ЧЕРНОВИК!! (Старый файл)
 
 class ForecastViewControllerOLD: UIViewController {
     
@@ -45,10 +46,6 @@ class ForecastViewControllerOLD: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        //print(openWeather.forecastCardArray[0].textTimeFormatted)
-        //print(openWeather.forecastCardArray[0].tempFormatted)
-        
         // Setting labels of location
         self.cityNameLabel.text = openWeather.cityName
         self.countryNameLabel.text = openWeather.countryName
@@ -76,7 +73,6 @@ class ForecastViewControllerOLD: UIViewController {
         // Setting forecast cards values through iterator
         for (num, dict) in OutletDictArray.enumerated() {
             for (key, val) in dict {
-                //print("i: \(i),x: \(x), y: \(y)")
                 
                 switch key {
                 case "pic":
