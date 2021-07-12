@@ -5,7 +5,7 @@
 //  Created by Mix174 on 11.06.2021.
 //
 
-final class CurrentDataModel {
+final class CurrentWeatherModel {
 
 }
 

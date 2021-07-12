@@ -11,6 +11,7 @@ import SwiftyJSON
 import MBProgressHUD
 import CoreLocation
 
+// MARK: !!ЧЕРНОВИК!! (Старый файл)
 
 final class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManagerDelegate {
     
@@ -47,7 +48,7 @@ final class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocation
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
         
-        print("zero first controller at work")
+        print("zero first controller loaded")
         
     }
    
@@ -126,10 +127,6 @@ final class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocation
             self.humidityLabel.text = "\(openWeather.humidity ?? 999) %"
             self.windSpeedLabel.text = "\(openWeather.windSpeed ?? 999) m/s"
         }
-        
-        // for Cheking
-        //print(openWeather.cityName ?? "city is not initialized")
-        //print(openWeather.cityTemp ?? "temp is not initialized")
     }
     
     func failure() {
@@ -157,22 +154,20 @@ final class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocation
             
             let coords = CLLocationCoordinate2D(latitude: currentLocation.coordinate.latitude, longitude: currentLocation.coordinate.longitude)
             self.openWeather.getWeatherFor(coords)
-            
-            //print("coords: \(coords)")
+
     }
     
     func locationManager(_ manager: CLLocationManager,
                          didFailWithError error: Error) {
-        //print("There is an error with loc-manager: \(error)")
+        print("There is an error with loc-manager: \(error)")
     }
     
     func present(by vc: UIViewController) {
-        let openWeatherModel = OpenWeatherModel()
-        let serverManager = SereverManager()
-        let locator = Locator()
-        let module = CurrentWeatherAssembly(openWeatherModel: openWeatherModel,
-                                            serverManager: serverManager,
-                                            locator: locator)
+//        let сurrentDataModel = CurrentDataModel()
+//        let serverManager = ServerManager()
+//        let locator = Locator()
+        let module = CurrentWeatherAssembly()
+        
         let newVC = module.build()
         
         vc.present(newVC, animated: true, completion: nil)

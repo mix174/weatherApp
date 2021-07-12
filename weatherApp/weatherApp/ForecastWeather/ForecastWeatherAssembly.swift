@@ -9,12 +9,12 @@ import UIKit
 
 final class ForecastWeatherAssembly {
     
-    private let forecastDataModel = ForecastDataModel()
+    private let forecastWeatherModel = ForecastWeatherModel()
 
     //    Метод для создания вьюКонтроллера и соединения с презентером и моделью
     func build() -> UIViewController {
         let presenter = ForecastWeatherPresenter(
-            forecastDataModel: forecastDataModel)
+            forecastDataModel: forecastWeatherModel)
 //        Присвоение вьюконтролера к вью в сториБорде
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let viewController = storyboard.instantiateViewController(identifier: String(describing: ForecastWeatherViewController.self)) as ForecastWeatherViewController

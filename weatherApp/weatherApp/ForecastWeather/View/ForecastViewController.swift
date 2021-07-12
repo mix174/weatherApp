@@ -32,7 +32,11 @@ final class ForecastWeatherViewController: UIViewController, ForecastWeatherView
         print("форекаст-вью загрузился")
         presenter?.viewDidLoad()
         
-        view.backgroundColor = UIColor.blue
+        forecastTableView.delegate = self
+        forecastTableView.dataSource = self
+        
+//        view.backgroundColor = UIColor.blue
+        
     }
     
 //  Для Спиннера
@@ -46,13 +50,18 @@ final class ForecastWeatherViewController: UIViewController, ForecastWeatherView
 }
 //  Дополнеие для TableView
 extension ForecastWeatherViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        1
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         array.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
-        cell.textLabel?.text = array[indexPath.row]
+//        cell.textLabel?.text = array[indexPath.row]
         return cell
     }
 }

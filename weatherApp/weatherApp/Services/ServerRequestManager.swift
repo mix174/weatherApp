@@ -23,8 +23,8 @@ final class ServerManager {
     }
     
     // Запрос и передача текущей погоды
-    func getCurrentData(coords: Coordinates,
-                           completion: @escaping (Result<CurrentDataDecodable, Error>) -> Void) {
+    func getCurrentWeather(coords: Coordinates,
+                           completion: @escaping (Result<CurrentWeatherDecodable, Error>) -> Void) {
         // Параметры для URL
         let params = ["lat": coords.latitude,
                       "lon": coords.longitude,
@@ -49,16 +49,16 @@ final class ServerManager {
                 }
                 // Конвертация данных из JSON в Decodable
                 do {
-                    let currentData = try JSONDecoder().decode(CurrentDataDecodable.self, from: data)
-                    completion(.success(currentData)) // передача currentData в completion
+                    let currentWeather = try JSONDecoder().decode(CurrentWeatherDecodable.self, from: data)
+                    completion(.success(currentWeather)) // передача currentData в completion
                 } catch {
                     completion(.failure(error))
                 }
             }
     }
     // Запрос и передача прогнозной погоды
-    func getForecastData(coords: Coordinates,
-                            completion: @escaping (Result<ForecastDataDecodable, Error>) -> Void) {
+    func getForecastWeather(coords: Coordinates,
+                            completion: @escaping (Result<ForecastWeatherDecodable, Error>) -> Void) {
         // Параметры для URL
         let params = ["lat": coords.latitude,
                       "lon": coords.longitude,
@@ -81,8 +81,8 @@ final class ServerManager {
                 }
                 // Конвертация данных из JSON в Decodable
                 do {
-                    let forecastData = try JSONDecoder().decode(ForecastDataDecodable.self, from: data)
-                    completion(.success(forecastData)) // передача foracastData в completion
+                    let forecastWeather = try JSONDecoder().decode(ForecastWeatherDecodable.self, from: data)
+                    completion(.success(forecastWeather)) // передача foracastWeather в completion
                 } catch {
                     completion(.failure(error))
                 }
