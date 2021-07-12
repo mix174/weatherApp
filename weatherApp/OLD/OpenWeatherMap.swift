@@ -16,8 +16,6 @@ protocol OpenWeatherMapDelegate {
     func failure()
 }
 
-// Adding this line to test GitHub GreatWorkflow
-
 class OpenWeatherMap {
     // OpenWeatherMap Singleton init
     static var shared = OpenWeatherMap()
@@ -44,6 +42,7 @@ class OpenWeatherMap {
         }
     }
     
+    // Properties of a model
     var forecastCardArray: [ForecastCard] = []
     
     let url = "https://api.openweathermap.org/data/2.5/weather"
@@ -55,6 +54,7 @@ class OpenWeatherMap {
     //also needs to check up converting func (what if request with not the metric unit?)
     let unit = "metric"
     
+    // Properties from JSON
     var cityName: String?
     var countryName: String?
     var cityTemp: Double?
@@ -63,7 +63,6 @@ class OpenWeatherMap {
     }
     
     var description: String?
-//    var currentTime: String
     var iconCode: String?
     var icon: UIImage {
         weatherIcon(iconCode: iconCode ?? "none")
@@ -71,7 +70,7 @@ class OpenWeatherMap {
     var humidity: Double?
     var windSpeed: Double?
     
-    
+    // Fuctions
     func getWeatherFor(_ city: String) {
         
         let params = ["q": city,
@@ -94,18 +93,16 @@ class OpenWeatherMap {
     }
     
     func setRequest(params: [String: Any]?) {
-        
-        let dispatchGroup = DispatchGroup()
+        //let dispatchGroup = DispatchGroup()
         
         // Request for current weather
-        dispatchGroup.enter()
+        //dispatchGroup.enter()
         AF.request(url,
                    method: .get,
                    parameters: params)
             .responseJSON { json in
-                
                 defer {
-                    dispatchGroup.leave()
+                    //dispatchGroup.leave()
                 }
                 
                 guard json.error == nil, let data = json.data else {
@@ -113,25 +110,24 @@ class OpenWeatherMap {
                     return
                 }
                 
+                print("data ", data)
             
                 let currentJSON = JSON(data)
-
                 
                 // cross to main thred
                 self.delegate.updateWeatherInfo(weatherJSON: currentJSON)
-                
                 print("Current ended")
         }
         
         // Request for forecast weather
-        dispatchGroup.enter()
+        //dispatchGroup.enter()
         AF.request(urlForecast,
                    method: .get,
                    parameters: params)
             .responseJSON { json in
                 
                 defer {
-                    dispatchGroup.leave()
+                    //dispatchGroup.leave()
                 }
                 
                 
@@ -152,12 +148,13 @@ class OpenWeatherMap {
                     }
                 }
                 
-                print("Forecast ended")
+                //print("Forecast ended")
         }
         
-        dispatchGroup.notify(queue: .main) {
-            print("End")
-        }
+//        dispatchGroup.notify(queue: .main) {
+            //print("End")
+//        }
+        print("setRequest ended")
     }
     
     
@@ -186,7 +183,7 @@ class OpenWeatherMap {
     func sendRequest(
         url: URL,
         params: [String: Any],
-        completion: @escaping (Result<Weather, Error>) -> Void
+        completion: @escaping (Result<CurrentWeatherDecoded, Error>) -> Void
     ) {
         AF.request(
             url,
@@ -205,7 +202,7 @@ class OpenWeatherMap {
             }
             
             do {
-                let weather = try JSONDecoder().decode(Weather.self, from: data)
+                let weather = try JSONDecoder().decode(CurrentWeatherDecoded.self, from: data)
                 completion(.success(weather))
             } catch {
                 completion(.failure(error))
@@ -213,4 +210,3 @@ class OpenWeatherMap {
         }
     }
 }
-

@@ -12,56 +12,33 @@ import MBProgressHUD
 import CoreLocation
 
 
-// Переименовать
-// используй final 
-class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManagerDelegate {
+final class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManagerDelegate {
     
-    // New Outlets
+    @IBOutlet private weak var cityNameLabel: UILabel!
     
-    // Private properties
-    @IBOutlet weak var cityNameLabel: UILabel!
+    @IBOutlet private weak var countryNameLabel: UILabel!
     
-    @IBOutlet weak var countryNameLabel: UILabel!
+    @IBOutlet private weak var weatherIconImage: UIImageView!
     
-    @IBOutlet weak var weatherIconImage: UIImageView!
+    @IBOutlet private weak var currentTempLabel: UILabel!
     
-    @IBOutlet weak var currentTempLabel: UILabel!
+    @IBOutlet private weak var descriptionLabel: UILabel!
     
-    @IBOutlet weak var descriptionLabel: UILabel!
+    @IBOutlet private weak var humidityLabel: UILabel!
     
-    @IBOutlet weak var humidityLabel: UILabel!
-    
-    @IBOutlet weak var windSpeedLabel: UILabel!
-    
-    
-    /* Old Outlets
-    // icon of the weather
-    @IBOutlet weak var iconImage: UIImageView!
-    
-    // choice of the city
-    @IBAction func cityButton(_ sender: UIBarButtonItem) {
-        
-        displayCity()
-    }
-
-    // current temp at main scrren
-    @IBOutlet weak var currentTemp: UILabel!
-    
-    // chosen city on the screen
-    @IBOutlet weak var cityName: UILabel!
-    */
+    @IBOutlet private weak var windSpeedLabel: UILabel!
     
     // Singletons
     var openWeather = OpenWeatherMap.shared
-    var hud = MBProgressHUD() // call it spinner
+    
+    // Services
+    var spinner = MBProgressHUD()
     var locationManager = CLLocationManager()
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-        
-        // Delegate with openWeather Class
+        // Delegate with openWeatherMap Class
         self.openWeather.delegate = self
         
         // ref's with location manager
@@ -70,9 +47,8 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
         
-        // Background setting
-        //let bg = UIImage(named: "")
-        //self.view.backgroundColor = UIColor(patternImage: bg!)
+        print("zero first controller at work")
+        
     }
    
     // YAGNI
@@ -102,10 +78,14 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
     
     func loadingIndicator() {
         
-        hud.label.text = "Loading..."
-        hud.areDefaultMotionEffectsEnabled = true
-        self.view.addSubview(hud)
-        hud.show(animated: true)
+        spinner.label.text = "Loading..."
+        spinner.areDefaultMotionEffectsEnabled = true
+        self.view.addSubview(spinner)
+        spinner.show(animated: true)
+        print(self.view.subviews)
+        spinner.hide(animated: true)
+        //self.view.subviews.re
+        spinner.removeFromSuperview()
     }
     
     //MARK: OpenWeatherMapDelegate
@@ -114,7 +94,8 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
         
         present(by: self)
         
-        hud.hide(animated: true)
+        spinner.hide(animated: true)
+        
         
         //Codable
         // Getting values from JSON
@@ -147,8 +128,8 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
         }
         
         // for Cheking
-        print(openWeather.cityName ?? "city is not initialized")
-        print(openWeather.cityTemp ?? "temp is not initialized")
+        //print(openWeather.cityName ?? "city is not initialized")
+        //print(openWeather.cityTemp ?? "temp is not initialized")
     }
     
     func failure() {
@@ -158,7 +139,7 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
         
         failureJsonController.addAction(okButton)
         
-        hud.hide(animated: true)
+        spinner.hide(animated: true)
         
         self.present(failureJsonController, animated: true, completion: nil)
     }
@@ -166,7 +147,7 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
     //MARK: CLLocationManagerDelegate
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        print(manager.location ?? "Location is updated, but something wrong with data")
+        //print(manager.location ?? "Location is updated, but something wrong with data")
         
         self.loadingIndicator()
         guard let currentLocation = locations.last, currentLocation.horizontalAccuracy > 0  else { return }
@@ -177,17 +158,21 @@ class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocationManage
             let coords = CLLocationCoordinate2D(latitude: currentLocation.coordinate.latitude, longitude: currentLocation.coordinate.longitude)
             self.openWeather.getWeatherFor(coords)
             
-            print("coords: \(coords)")
+            //print("coords: \(coords)")
     }
     
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("There is an error with loc-manager: \(error)")
+    func locationManager(_ manager: CLLocationManager,
+                         didFailWithError error: Error) {
+        //print("There is an error with loc-manager: \(error)")
     }
-    
     
     func present(by vc: UIViewController) {
-        let openWeatherMap = OpenWeatherMap()
-        let module = CurrentWeatherAssembly(openWeatherMap: openWeatherMap)
+        let openWeatherModel = OpenWeatherModel()
+        let serverManager = SereverManager()
+        let locator = Locator()
+        let module = CurrentWeatherAssembly(openWeatherModel: openWeatherModel,
+                                            serverManager: serverManager,
+                                            locator: locator)
         let newVC = module.build()
         
         vc.present(newVC, animated: true, completion: nil)
