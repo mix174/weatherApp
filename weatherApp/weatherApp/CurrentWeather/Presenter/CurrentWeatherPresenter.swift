@@ -10,9 +10,7 @@ import UIKit
 protocol CurrentWeatherPresenterProtocol: class {
     func viewDidLoad()
     func getLocation()
-    
     func getWeatherFor(city: String)
-    
     func moveToForecastView()
 }
 
@@ -34,17 +32,11 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
     
     // Загрузка экрана с текущей погодой
     func viewDidLoad() {
-        print("Презентер загрузился")
-        
         // Показать значок загрузки перед загрузкой данных о локации и погоде
         currentView?.showSpinner()
-        
         // Получить данные о текущей локации
         getLocation()
         
-        // Передать данные в вью
-        
-        // Спрятать значок загрузки после загрузки данных с текущей погодой с сервера
     }
     // Запросить данные о текущем местоположении
     func getLocation() {
@@ -71,8 +63,6 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
         serverManager.getCurrentWeather(coords: coords) { [weak self] result in
             // self optinal bindinig
             guard let self = self else { return }
-            
-            print("Current Data: updated")
             // Обработка результата
             switch result {
             case .success(let currentWeather):
@@ -86,12 +76,10 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
         serverManager.getForecastWeather(coords: coords) { [weak self] result in
             // self optinal bindinig
             guard let self = self else { return }
-            
-            print("Forecast Data: updated")
             // Обработка результата
             switch result {
             case .success(let forecastWeather):
-                // Передача данных в DataManager для прогнозного экрана
+                // Передача данных в DataManager для экрана с прогнозом
                 DataManager.shared.forecastWeather = forecastWeather // можно отложить
                 // Передача данных в функцию обновления экрана
                 self.updateOnView(forecastWeather: forecastWeather)
@@ -103,18 +91,22 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
     
     // Обновление текущих данных на куррент Вью
     func updateOnView(currentWeather: CurrentWeatherDecodable) {
-        print("Функция обновления данных в презентере на вью")
-        print("current windSpeed: ", currentWeather.wind.windSpeed)
-        print("current main: ", currentWeather.weather[0].mainCondition!)
+        // TEST
+        print("Функция обновления текущих данных в презентере на вью")
+        print(currentWeather.timeUnix)
+        
+        self.currentView?.setWeather(data: currentWeather)
         self.currentView?.hideSpinner()
-        guard let background = currentWeather.weather[0].backgroundImage else { return }
-        self.currentView?.setBackground(backgroundImage: background)
     }
     
     // Обновление прогнозных данных на куррент Вью
     func updateOnView(forecastWeather: ForecastWeatherDecodable) {
-        print("Функция обновления данных в презентере на вью")
-        print("forecast temp: ", forecastWeather.partWeather[3].main.temp)
+        // TEST
+        print("Функция обновления прогнозных данных в презентере на вью")
+        print(forecastWeather.partWeather[0].time)
+        print(forecastWeather.partWeather[0].weekday)
+        
+        currentView?.updateForecastTable(forecastWeather: forecastWeather)
     }
     
 //    Перемещение на экран с прогнозом
