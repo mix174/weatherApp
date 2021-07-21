@@ -15,16 +15,32 @@ final class ForecastWeatherPresenter: ForecastWeatherPresenterProtocol {
     // Связь с сервисами
     weak var forecastView: ForecastWeatherViewControllerProtocol?
     private let forecastWeatherModel: ForecastWeatherModel
+    private var dataManager = DataManager.shared
     
+    // Инициализатор
     init(forecastDataModel: ForecastWeatherModel) {
         self.forecastWeatherModel = forecastDataModel
     }
 
-//    Загрузка экрана с прогнозной погодой
+    // Загрузка экрана с прогнозной погодой
     func viewDidLoad() {
         print("Презентер-Forecast загрузился")
+        guard let forecastWather = dataManager.forecastWeather else {
+            print("no forecast weather at forecast-presenter")
+            return }
+        prepareWeatherModel(data: forecastWather)
     }
-//    Перемещение на экран с текущей погодой
+    
+    func prepareWeatherModel(data: ForecastWeatherDecodable) {
+        let weatherArray = forecastWeatherModel.prepareWeatherModel(data: data)
+        updateWeatherView(weatherArray: weatherArray)
+    }
+    
+    func updateWeatherView(weatherArray: [CurrentWeatherDecodable]) {
+        forecastView?.updateWeather(weatherArray: weatherArray)
+    }
+    
+    // Перемещение на экран с текущей погодой
     func moveToCurrentView() {
         print("moveToCur in presenter")
         RootManager.shared.moveToCurrentView()
