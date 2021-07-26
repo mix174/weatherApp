@@ -12,13 +12,17 @@ struct CurrentWeatherDecodable: Codable {
     // Корневая структура JSON-ответа с сервера (weather)
     let cityId: Int?
     let city: String?
-    let weather: [Weather]
+    let weather: Weather
     let main: Main
     let wind: WindSpeed
     let clouds: Clouds
-    let timeUnix: Double
     let timeZone: Double?
     let sys: Sys
+    
+    private let timeUnix: Double
+    let time: String
+    let date: String
+    let weekday: String
     
     enum CodingKeys: String, CodingKey {
         case cityId = "id"
@@ -30,6 +34,37 @@ struct CurrentWeatherDecodable: Codable {
         case timeUnix = "dt"
         case timeZone = "timezone"
         case sys
+    }
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        cityId = try? container.decode(Int.self, forKey: .cityId)
+        city = try? container.decode(String.self, forKey: .city)
+        main = try container.decode(Main.self, forKey: .main)
+        wind = try container.decode(WindSpeed.self, forKey: .wind)
+        clouds = try container.decode(Clouds.self, forKey: .clouds)
+        timeZone = try? container.decode(Double.self, forKey: .timeZone)
+        sys = try container.decode(Sys.self, forKey: .sys)
+        
+        let weather = try container.decode([Weather].self, forKey: .weather)
+        let timeUnix = try container.decode(Double.self, forKey: .timeUnix)
+        self.weather = weather[0]
+        self.timeUnix = timeUnix
+        
+        // time, date & weekday property setup
+        // Смотрится криво. Ниже в файле есть реализация через computed properties в extension
+        let dateFull = Date(timeIntervalSince1970: timeUnix)
+        let dateFormatter = DateFormatter()
+        // time
+        dateFormatter.dateFormat = "HH:mm"
+        self.time = dateFormatter.string(from: dateFull)
+        // date
+        dateFormatter.dateFormat = "dd.MM"
+        self.date = dateFormatter.string(from: dateFull)
+        // weekday
+        dateFormatter.locale = Locale(identifier: "ru_RU")
+        dateFormatter.dateFormat = "EEEE"
+        self.weekday = dateFormatter.string(from: dateFull).capitalized
     }
     
     // Вложенная структура Weather
@@ -96,23 +131,10 @@ struct CurrentWeatherDecodable: Codable {
     }
     // Вложенная структура Main
     struct Main: Codable {
-        let temp: Double
-        let feelsLike: Double
-        let pressure: Double
-        let humidity: Double
-        // Конвертация temp, feelsLike, pressure и humidity из Double в String, для отображения на Вью
-        var tempConverted: String {
-            String(format: "%.1f", temp) + "°"
-        }
-        var feelsLikeConverted: String {
-            String(format: "%.1f", feelsLike) + "°"
-        }
-        var pressureConverted: String {
-            String(format: "%.1f", (pressure / 1000 * 750.064)) + " mmHg"
-        }
-        var humidityConverted: String {
-            String(format: "%.0f", humidity) + "%"
-        }
+        let temp: String
+        let feelsLike: String
+        let pressure: String
+        let humidity: String
         
         enum CodingKeys: String, CodingKey {
             case temp
@@ -120,17 +142,32 @@ struct CurrentWeatherDecodable: Codable {
             case pressure
             case humidity
         }
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            
+            let temp = try container.decode(Double.self, forKey: .temp)
+            let feelsLike = try container.decode(Double.self, forKey: .feelsLike)
+            let pressure = try container.decode(Double.self, forKey: .pressure)
+            let humidity = try container.decode(Double.self, forKey: .humidity)
+            
+            self.temp = "\(Int(temp.rounded()))°"
+            self.feelsLike = "\(Int(feelsLike.rounded()))°"
+            self.pressure = "\(Int((pressure / 1000 * 750.064).rounded())) ммрт"
+            self.humidity = "\(Int(humidity.rounded()))%"
+        }
     }
     // Вложенная структура Wind
     struct WindSpeed: Codable {
-        let windSpeed: Double
+        let windSpeed: String
         
         enum CodingKeys: String, CodingKey {
             case windSpeed = "speed"
         }
-    // Конвертация windSpeed из Double в String, для отображения на Вью
-        var windSpeedConverted: String {
-            String(format: "%.1f", windSpeed) + " м/с"
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            
+            let windSpeed = try container.decode(Double.self, forKey: .windSpeed)
+            self.windSpeed = "\(Int(windSpeed.rounded())) м/с"
         }
     }
     // Вложенная структура Clouds
@@ -275,10 +312,11 @@ extension CurrentWeatherDecodable.Weather {
     }
 }
 
+// YAGNI??
 // Дополнение корневой структуры CurrentWeatherDecodable для работы с отображением времени и дня недели
 extension CurrentWeatherDecodable {
     // Используется Unix время: не понятно, нужно ли добавлять timeShift (сдвиг часового пояса)? так как если его добавлять, то появляются лишние 3 часа, а без него все как надо (есть подозрение, что ошибка в другом, но мб и нет). Изначально было сделано в ForecastWeatherDecodable, чтобы использовать timeZone. Сейчас сделано без timeZone, поэтому проще реализовать в CurrentWeatherDecodable
-    var time: String {
+    var timeNew: String {
         let dateFull = Date(timeIntervalSince1970: timeUnix)
         let dateFormatter = DateFormatter()
         
@@ -288,14 +326,14 @@ extension CurrentWeatherDecodable {
         let time = dateFormatter.string(from: dateFull)
         return time
     }
-    var date: String {
+    var dateNew: String {
         let dateFull = Date(timeIntervalSince1970: timeUnix)
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd.MM"
         let date = dateFormatter.string(from: dateFull)
         return date
     }
-    var weekday: String {
+    var weekdayNew: String {
         let dateFull = Date(timeIntervalSince1970: timeUnix)
         let dateFormatter = DateFormatter()
         dateFormatter.locale = Locale(identifier: "ru_RU")
