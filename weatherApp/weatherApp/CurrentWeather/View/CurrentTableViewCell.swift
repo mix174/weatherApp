@@ -9,13 +9,13 @@ import UIKit
 
 final class CurrentTableViewCell: UITableViewCell {
     
-    @IBOutlet weak var time: UILabel!
-    @IBOutlet weak var icon: UIImageView!
-    @IBOutlet weak var temp: UILabel!
+    @IBOutlet private weak var time: UILabel!
+    @IBOutlet private weak var icon: UIImageView!
+    @IBOutlet private weak var temp: UILabel!
     
-    func cellSetup(rowData: CurrentWeatherDecodable) {
+    func cellSetup(rowData: TableViewWeatherStruct) {
         time.text = rowData.time
-        icon.image = rowData.weather[0].iconImage
-        temp.text = rowData.main.tempConverted
+        icon.image = rowData.icon
+        temp.text = rowData.temp
     }
 }

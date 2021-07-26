@@ -5,7 +5,6 @@
 //  Created by Mix174 on 04.06.2021.
 //
 
-import Foundation
 import UIKit
 import MBProgressHUD
 
@@ -14,10 +13,10 @@ protocol CurrentWeatherViewControllerProtocol: class {
     func showSpinner()
     func hideSpinner()
     func setBackground(backgroundImage: UIImage)
-    func setWeather(data: CurrentWeatherDecodable)
+    func setWeather(data: CurrentWetherStruct)
     func failureLocation()
     
-    func updateForecastTable(forecastWeather: ForecastWeatherDecodable)
+    func updateForecastTable(forecastWeather: [TableViewWeatherStruct])
 }
 
 final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewControllerProtocol {
@@ -26,31 +25,29 @@ final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewCo
     var presenter: CurrentWeatherPresenterProtocol?
     
     // Loading spinner init in property
-    let spinner = MBProgressHUD(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+    private let spinner = MBProgressHUD(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
     
     // MARK: Основные аутлеты
     // Местоположение
-    @IBOutlet weak var locationLabel: UILabel!
+    @IBOutlet private weak var locationLabel: UILabel!
     // Описание погоды
-    @IBOutlet weak var weatherDescribLabel: UILabel!
+    @IBOutlet private weak var weatherDescribLabel: UILabel!
     // Иконка погоды
-    @IBOutlet weak var iconImage: UIImageView!
+    @IBOutlet private weak var iconImage: UIImageView!
     // Основная температура
-    @IBOutlet weak var mainTempLabel: UILabel!
+    @IBOutlet private weak var mainTempLabel: UILabel!
     // Влажность
-    @IBOutlet weak var humidityLabel: UILabel!
+    @IBOutlet private weak var humidityLabel: UILabel!
     // Скорость ветра
-    @IBOutlet weak var windSpeedLabel: UILabel!
+    @IBOutlet private weak var windSpeedLabel: UILabel!
     
     // MARK: Аутлет tableView
-    @IBOutlet weak var currentTableView: UITableView!
+    @IBOutlet private weak var currentTableView: UITableView!
     // Для tableView
-    let identifier = "forecastAtCurrentCell"
-    var forecastTableViewData: ForecastWeatherDecodable?
-    
+    var forecastTableViewData: [TableViewWeatherStruct] = []
     
     // MARK: Кнопки навигации
-    @IBAction func moveToForecastView(_ sender: UIButton) {
+    @IBAction private func moveToForecastView(_ sender: UIButton) {
         print("forecastButton pressed")
         self.presenter?.moveToForecastView()
     }
@@ -63,7 +60,6 @@ final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewCo
     }
     
     // MARK: Настройка фона
-    // Background Setup — нужно сделать выбор между методом
     func setBackground(backgroundImage: UIImage) {
 
         let imageView = UIImageView(frame: view.bounds)
@@ -76,26 +72,25 @@ final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewCo
     }
     
     // MARK: Функции для отображения данных
-    func setWeather(data: CurrentWeatherDecodable) {
+    func setWeather(data: CurrentWetherStruct) {
         // Установка фона
-        guard let background = data.weather[0].backgroundImage else { return }
-        self.setBackground(backgroundImage: background)
+        self.setBackground(backgroundImage: data.backgroundImage)
         // Установка основных данных
-        locationLabel.text = data.city
-        weatherDescribLabel.text = data.weather[0].description
-        iconImage.image = data.weather[0].iconImage
-        mainTempLabel.text = data.main.tempConverted
-        humidityLabel.text = data.main.humidityConverted
-        windSpeedLabel.text = data.wind.windSpeedConverted
+        locationLabel.text = data.location
+        weatherDescribLabel.text = data.description
+        iconImage.image = data.icon
+        mainTempLabel.text = data.temp
+        humidityLabel.text = data.humidity
+        windSpeedLabel.text = data.windSpeed
     }
     // Функция присвоения данных и активации роли делегата для текущего вьюКонтроллера
-    func updateForecastTable(forecastWeather: ForecastWeatherDecodable) {
+    func updateForecastTable(forecastWeather: [TableViewWeatherStruct]) {
         forecastTableViewData = forecastWeather
-        delegateForecastTableView()
+        setupTableViewDelegate()
         currentTableView.reloadData() // без релоуд данные не появляются самостоятельно
     }
     // Функция присвоения роли делегата и источника данных для TableView
-    func delegateForecastTableView() {
+    func setupTableViewDelegate() {
         currentTableView.delegate = self
         currentTableView.dataSource = self
     }
@@ -138,24 +133,20 @@ final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewCo
     }
 }
 
-
 // Дополнение для TableView
 extension CurrentWeatherViewController: UITableViewDelegate, UITableViewDataSource {
     
     func numberOfSections(in tableView: UITableView) -> Int {
         1
     }
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        5
+        forecastTableViewData.count
     }
-    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath) as! CurrentTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: CurrentTableViewCell.reuseIdentifier, for: indexPath) as! CurrentTableViewCell
         
-        guard let rowData = forecastTableViewData?.partWeather[indexPath.row] else {
+        guard let rowData = forecastTableViewData[safe: indexPath.row] else {
             print("Проблема в данных при построении ячейки в CurrentWeatherViewController")
-            cell.time.text = "not found"
             return cell
         }
         cell.cellSetup(rowData: rowData)
