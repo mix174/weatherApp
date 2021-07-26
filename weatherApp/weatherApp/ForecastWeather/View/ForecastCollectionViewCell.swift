@@ -9,19 +9,19 @@ import UIKit
 
 final class ForecastCollectionViewCell: UICollectionViewCell {
     
-    @IBOutlet weak var date: UILabel!
-    @IBOutlet weak var weekday: UILabel!
-    @IBOutlet weak var windSpeed: UILabel!
-    @IBOutlet weak var humidity: UILabel!
-    @IBOutlet weak var temp: UILabel!
-    @IBOutlet weak var icon: UIImageView!
+    @IBOutlet private weak var date: UILabel!
+    @IBOutlet private weak var weekday: UILabel!
+    @IBOutlet private weak var windSpeed: UILabel!
+    @IBOutlet private weak var humidity: UILabel!
+    @IBOutlet private weak var temp: UILabel!
+    @IBOutlet private weak var icon: UIImageView!
     
-    func cellSetup(rowData: CurrentWeatherDecodable) {
+    func cellSetup(rowData: ForecastWeatherStruct) {
         date.text = rowData.date
         weekday.text = rowData.weekday
-        windSpeed.text = rowData.wind.windSpeedConverted
-        humidity.text = rowData.main.humidityConverted
-        temp.text = rowData.main.tempConverted
-        icon.image = rowData.weather[0].iconImage
+        windSpeed.text = rowData.windSpeed
+        humidity.text = rowData.humidity
+        temp.text = rowData.temp
+        icon.image = rowData.icon
     }
 }

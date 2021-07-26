@@ -9,15 +9,15 @@ import UIKit
 
 final class ForecastTableViewCell: UITableViewCell {
     
-    @IBOutlet weak var weekday: UILabel!
-    @IBOutlet weak var date: UILabel!
-    @IBOutlet weak var icon: UIImageView!
-    @IBOutlet weak var temp: UILabel!
+    @IBOutlet private weak var weekday: UILabel!
+    @IBOutlet private weak var date: UILabel!
+    @IBOutlet private weak var icon: UIImageView!
+    @IBOutlet private weak var temp: UILabel!
     
-    func cellSetup(rowData: CurrentWeatherDecodable) {
+    func cellSetup(rowData: ForecastWeatherStruct) {
         weekday.text = rowData.weekday
         date.text = rowData.date
-        icon.image = rowData.weather[0].iconImage
-        temp.text = rowData.main.tempConverted
+        icon.image = rowData.icon
+        temp.text = rowData.temp
     }
 }

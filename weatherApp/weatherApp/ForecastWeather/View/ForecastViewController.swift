@@ -6,9 +6,10 @@
 //
 
 import UIKit
+import MBProgressHUD
 
 protocol ForecastWeatherViewControllerProtocol: class {
-    func updateWeather(weatherArray: [CurrentWeatherDecodable])
+    func updateWeather(weatherArray: [ForecastWeatherStruct])
     func showSpinner()
     func hideSpinner()
 }
@@ -16,19 +17,22 @@ protocol ForecastWeatherViewControllerProtocol: class {
 final class ForecastWeatherViewController: UIViewController, ForecastWeatherViewControllerProtocol {
     
     // Связи
+    // Интерфейс презентера
     var presenter: ForecastWeatherPresenterProtocol?
-    var forecastData: [CurrentWeatherDecodable]?
+    
+    // Инициализация спиннера
+    private let spinner = MBProgressHUD(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+    // Прогнозные данные
+    var forecastData: [ForecastWeatherStruct] = []
     
     // CollectionView
-    @IBOutlet weak var forecastCollectionView: UICollectionView!
-    let collectionIdentifier = "collectionViewCell"
+    @IBOutlet private weak var forecastCollectionView: UICollectionView!
     
     // TableView
-    @IBOutlet weak var forecastTableView: UITableView!
-    let tableIdentifier = "tableViewCell"
+    @IBOutlet private weak var forecastTableView: UITableView!
     
     // Location Outlet
-    @IBOutlet weak var locationLabel: UILabel!
+    @IBOutlet private weak var locationLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,12 +41,18 @@ final class ForecastWeatherViewController: UIViewController, ForecastWeatherView
     }
     
     // Функции обновления данных
-    func updateWeather(weatherArray: [CurrentWeatherDecodable]) {
+    func updateWeather(weatherArray: [ForecastWeatherStruct]) {
         forecastData = weatherArray
         delegateTableView()
         delegateCollectionView()
+        updateLocationLabel()
+        hideSpinner()
     }
-    
+    // Обновление лейбла местоположения
+    func updateLocationLabel() {
+        guard let location = forecastData.first?.location else { return }
+        locationLabel.text = location
+    }
     // Функция присвоения роли делегата и источника данных для TableView
     func delegateTableView() {
         forecastTableView.delegate = self
@@ -54,12 +64,21 @@ final class ForecastWeatherViewController: UIViewController, ForecastWeatherView
         forecastCollectionView.dataSource = self
     }
     
-    // Функции Спиннера: дополнить
+    // Функции Спиннера
     func showSpinner() {
-        print("Лоадер форекаст показан")
+        guard spinner.alpha == 0 else {
+            print("spinner is alredy showed")
+            return
+        }
+        spinner.areDefaultMotionEffectsEnabled = true
+        self.view.addSubview(spinner)
+        spinner.show(animated: true)
+        print("spinner показан")
     }
     func hideSpinner() {
-        print("Лоадер форекаст спрятан")
+        spinner.hide(animated: true)
+        spinner.removeFromSuperview()
+        print("spinner спрятан")
     }
     
 }
@@ -71,14 +90,13 @@ extension ForecastWeatherViewController: UITableViewDelegate, UITableViewDataSou
     }
     // Количество ячеек
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        forecastData?.count ?? 1
+        forecastData.count
     }
     // Построение ячейки
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: tableIdentifier, for: indexPath) as! ForecastTableViewCell
-        guard let rowData = forecastData?[indexPath.row] else {
+        let cell = tableView.dequeueReusableCell(withIdentifier: ForecastTableViewCell.reuseIdentifier, for: indexPath) as! ForecastTableViewCell
+        guard let rowData = forecastData[safe: indexPath.row] else {
             print("Проблема в данных при построении ячейки table в ForecastWeatherViewController")
-            cell.temp.text = "not found"
             return cell
         }
         cell.cellSetup(rowData: rowData)
@@ -90,14 +108,13 @@ extension ForecastWeatherViewController: UITableViewDelegate, UITableViewDataSou
 extension ForecastWeatherViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     // Количетсво ячеек
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        forecastData?.count ?? 1
+        forecastData.count
     }
     // Построение ячейки
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: collectionIdentifier, for: indexPath) as! ForecastCollectionViewCell
-        guard let rowData = forecastData?[indexPath.row] else {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ForecastCollectionViewCell.reuseIdentifier, for: indexPath) as! ForecastCollectionViewCell
+        guard let rowData = forecastData[safe: indexPath.row] else {
             print("Проблема в данных при построении ячейки сollection в ForecastWeatherViewController")
-            cell.temp.text = "not found"
             return cell
         }
         cell.cellSetup(rowData: rowData)
