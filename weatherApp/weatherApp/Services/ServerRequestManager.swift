@@ -15,6 +15,7 @@ final class ServerManager {
     let currentUrl = "https://api.openweathermap.org/data/2.5/weather"
     let forecastUrl = "https://api.openweathermap.org/data/2.5/forecast"
     let unitsMetric = "metric"
+    let langRus = "ru"
     
     // Enum c ошибками для запросов о погоде с сервера, обработки JSON и конвертации JSON в Decodable
     enum ServerErrorList: Error {
@@ -29,6 +30,7 @@ final class ServerManager {
         let params = ["lat": coords.latitude,
                       "lon": coords.longitude,
                       "units": unitsMetric,
+                      "lang": langRus,
                       "appid": token] as [String : Any]
         
         AF.request(currentUrl,
@@ -63,6 +65,7 @@ final class ServerManager {
         let params = ["lat": coords.latitude,
                       "lon": coords.longitude,
                       "units": unitsMetric,
+                      "lang": langRus,
                       "appid": token] as [String : Any]
         
         AF.request(forecastUrl,
