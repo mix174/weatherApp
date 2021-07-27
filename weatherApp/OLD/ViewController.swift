@@ -174,3 +174,13 @@ final class ViewController: UIViewController, OpenWeatherMapDelegate, CLLocation
     }
 }
 
+//// Spinner check - временная проверка
+//@IBAction func spinnerCheck(_ sender: UIButton) {
+//    showSpinner()
+//    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [self] in
+//        showSpinner()
+//    }
+//    DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) { [self] in
+//        hideSpinner()
+//    }
+//}
