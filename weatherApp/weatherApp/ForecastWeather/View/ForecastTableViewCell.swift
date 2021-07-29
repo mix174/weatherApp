@@ -9,15 +9,19 @@ import UIKit
 
 final class ForecastTableViewCell: UITableViewCell {
     
-    @IBOutlet private weak var weekday: UILabel!
-    @IBOutlet private weak var date: UILabel!
-    @IBOutlet private weak var icon: UIImageView!
-    @IBOutlet private weak var temp: UILabel!
+    @IBOutlet weak var viewInCell: ForecastViewInCell!
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        apperanceSetup()
+    }
+    
+    func apperanceSetup() {
+        viewInCell.backgroundColor = UIColor(displayP3Red: 250, green: 250, blue: 250, alpha: 0.65)
+        viewInCell.layer.cornerRadius = 10
+    }
     
     func cellSetup(rowData: ForecastWeatherStruct) {
-        weekday.text = rowData.weekday
-        date.text = rowData.date
-        icon.image = rowData.icon
-        temp.text = rowData.temp
+        viewInCell.cellSetup(rowData: rowData)
     }
 }

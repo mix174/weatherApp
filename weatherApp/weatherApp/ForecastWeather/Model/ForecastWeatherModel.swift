@@ -20,7 +20,7 @@ final class ForecastWeatherModel {
                                                                   icon: weatherItem.weather.iconImage ?? UIImage(imageLiteralResourceName: "none"),
                                                                   temp: weatherItem.main.temp,
                                                                   humidity: weatherItem.main.humidity,
-                                                                  windSpeed: weatherItem.wind.windSpeed)
+                                                                  windSpeed: weatherItem.wind.windSpeed, backgroundImage: weatherItem.weather.backgroundImage ?? UIImage(imageLiteralResourceName: "BG-NormalWeather"))
                 forecastArray.append(forecastWeatherStruct)
             }
         }

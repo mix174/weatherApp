@@ -46,6 +46,10 @@ final class ForecastWeatherViewController: UIViewController, ForecastWeatherView
         delegateTableView()
         delegateCollectionView()
         updateLocationLabel()
+        
+        // пока без проверки
+        setBackground(backgroundImage: weatherArray.first?.backgroundImage ??
+                        UIImage(imageLiteralResourceName: "BG-NormalWeather"))
         hideSpinner()
     }
     // Обновление лейбла местоположения
@@ -62,6 +66,18 @@ final class ForecastWeatherViewController: UIViewController, ForecastWeatherView
     func delegateCollectionView() {
         forecastCollectionView.delegate = self
         forecastCollectionView.dataSource = self
+    }
+    // MARK: Настройка фона
+    func setBackground(backgroundImage: UIImage) {
+
+        let imageView = UIImageView(frame: view.bounds)
+        imageView.contentMode =  .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.image = backgroundImage
+        imageView.alpha = 0.9
+        imageView.center = view.center
+        view.addSubview(imageView)
+        self.view.sendSubviewToBack(imageView)
     }
     
     // Функции Спиннера
@@ -122,16 +138,16 @@ extension ForecastWeatherViewController: UICollectionViewDelegate, UICollectionV
     }
     // Размер ячейки
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        CGSize(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+        CGSize(width: collectionView.frame.width - 20, height: collectionView.frame.height)
     }
     
     // Сейчас есть проблемы с отступами
     // Отступы
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-//        return 0
-//    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 20
+    }
 //    // Отступы #2
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-//        return UIEdgeInsets(top: 0, left: 5, bottom: 0, right: 5)
-//    }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+    }
 }

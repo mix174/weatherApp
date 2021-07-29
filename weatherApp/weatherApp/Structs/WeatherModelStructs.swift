@@ -33,4 +33,5 @@ struct ForecastWeatherStruct {
     let temp: String
     let humidity: String
     let windSpeed: String
+    let backgroundImage: UIImage
 }
