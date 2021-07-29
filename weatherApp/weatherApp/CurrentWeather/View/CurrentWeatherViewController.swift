@@ -37,9 +37,9 @@ final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewCo
     // Основная температура
     @IBOutlet private weak var mainTempLabel: UILabel!
     // Влажность
-    @IBOutlet private weak var humidityLabel: UILabel!
+    @IBOutlet private weak var humidityLabel: GreyLabel!
     // Скорость ветра
-    @IBOutlet private weak var windSpeedLabel: UILabel!
+    @IBOutlet private weak var windSpeedLabel: GreyLabel!
     
     // MARK: Аутлет tableView
     @IBOutlet private weak var currentTableView: UITableView!
@@ -61,7 +61,6 @@ final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewCo
     
     // MARK: Настройка фона
     func setBackground(backgroundImage: UIImage) {
-
         let imageView = UIImageView(frame: view.bounds)
         imageView.contentMode =  .scaleAspectFill
         imageView.clipsToBounds = true
@@ -80,8 +79,9 @@ final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewCo
         weatherDescribLabel.text = data.description
         iconImage.image = data.icon
         mainTempLabel.text = data.temp
-        humidityLabel.text = data.humidity
-        windSpeedLabel.text = data.windSpeed
+//        humidityLabel.text = data.humidity
+        humidityLabel.set2LineText(type: .humidity, secondLine: data.humidity)
+        windSpeedLabel.set2LineText(type: .windSpeed, secondLine: data.windSpeed)
     }
     // Функция присвоения данных и активации роли делегата для текущего вьюКонтроллера
     func updateForecastTable(forecastWeather: [TableViewWeatherStruct]) {
