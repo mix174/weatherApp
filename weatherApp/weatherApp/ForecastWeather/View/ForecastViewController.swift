@@ -25,14 +25,17 @@ final class ForecastWeatherViewController: UIViewController, ForecastWeatherView
     // Прогнозные данные
     var forecastData: [ForecastWeatherStruct] = []
     
+    // Location Outlet
+    @IBOutlet private weak var locationLabel: UILabel!
+    
     // CollectionView
     @IBOutlet private weak var forecastCollectionView: UICollectionView!
     
     // TableView
     @IBOutlet private weak var forecastTableView: UITableView!
     
-    // Location Outlet
-    @IBOutlet private weak var locationLabel: UILabel!
+    // CollectionView Scroll Indicator
+    @IBOutlet weak var collectionIndicatorScroll: IndicatorScroll!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,6 +49,8 @@ final class ForecastWeatherViewController: UIViewController, ForecastWeatherView
         delegateTableView()
         delegateCollectionView()
         updateLocationLabel()
+        // Indicator Scroll количество точек
+        collectionIndicatorScroll.numberOfPages = weatherArray.count
         
         // пока без проверки
         setBackground(backgroundImage: weatherArray.first?.backgroundImage ??
@@ -140,14 +145,20 @@ extension ForecastWeatherViewController: UICollectionViewDelegate, UICollectionV
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         CGSize(width: collectionView.frame.width - 20, height: collectionView.frame.height)
     }
-    
-    // Сейчас есть проблемы с отступами
-    // Отступы
+    // Отступы между ячейками
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 20
     }
-//    // Отступы #2
+    // Отступы от краев
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
+    }
+    // Номер ячейки, который будет показан при текущем напрвлении скрола
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        // ТЕСТЫ
+        print("willDisplay")
+        print(indexPath.row)
+        // Передача в Scroll Indicator номера ячейки, которая будет показана
+        collectionIndicatorScroll.currentPage = indexPath.row
     }
 }
