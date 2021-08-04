@@ -8,7 +8,7 @@
 import UIKit
 
 final class ForecastCollectionViewCell: UICollectionViewCell {
-    
+    // Аутлеты
     @IBOutlet private weak var date: UILabel!
     @IBOutlet private weak var weekday: UILabel!
     @IBOutlet private weak var windSpeed: UILabel!
@@ -16,16 +16,20 @@ final class ForecastCollectionViewCell: UICollectionViewCell {
     @IBOutlet private weak var temp: UILabel!
     @IBOutlet private weak var icon: UIImageView!
     
+    // Действия после загрузки
     override func awakeFromNib() {
         super.awakeFromNib()
         apperanceSetup()
     }
+    
+    // Настройка внешнего вида ячейки
     func apperanceSetup() {
         backgroundColor = UIColor(displayP3Red: 250, green: 250, blue: 250, alpha: 0.65)
         layer.cornerRadius = 10
     }
     
-    func cellSetup(rowData: ForecastWeatherStruct) {
+    // Сборка ячейки
+    func cellSetup(rowData: LongForecastWeatherStruct) {
         date.text = rowData.date
         weekday.text = rowData.weekday
         windSpeed.attributedText = setMixedText(type: .windSpeed,
@@ -35,13 +39,15 @@ final class ForecastCollectionViewCell: UICollectionViewCell {
         icon.image = rowData.icon
         temp.text = rowData.temp
     }
+    
+    // MARK: Работа со смешанным текстом в лейблах
     // Выбор показателя для лейбла
-    enum IndicatorType: String {
+    enum ParameterType: String {
         case humidity = "Влажность"
         case windSpeed = "Ветер"
     }
-    // Установка текста
-    func setMixedText(type: IndicatorType, indicator: String) -> NSMutableAttributedString {
+    // Установка смешанного текста
+    func setMixedText(type: ParameterType, indicator: String) -> NSMutableAttributedString {
         let attributedText =
             NSMutableAttributedString()
             .normal("\(type.rawValue)  ", fontSize: 20)

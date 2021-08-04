@@ -28,12 +28,13 @@ final class GrayButton: UIButton {
     // автонастройка кнопки
     override func awakeFromNib() {
         super.awakeFromNib()
-
         if let backgroundColor = backgroundColor {
             color = backgroundColor
         }
         setup()
     }
+    
+    // MARK: Анимация кнопки
     // условие нажатия кнопки
     override var isHighlighted: Bool {
         didSet {

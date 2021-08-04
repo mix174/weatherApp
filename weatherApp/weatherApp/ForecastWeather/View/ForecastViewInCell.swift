@@ -15,12 +15,10 @@ final class ForecastViewInCell: UIView {
     @IBOutlet private weak var temp: UILabel!
     
     
-    func cellSetup(rowData: ForecastWeatherStruct) {
+    func cellSetup(rowData: LongForecastWeatherStruct) {
         weekday.text = rowData.weekday
         date.text = rowData.date
         icon.image = rowData.icon
         temp.text = rowData.temp
     }
-    // Работа со смешанным текстом в лейблах
-    
 }

@@ -7,9 +7,16 @@
 
 import UIKit
 
-// Структура для основных данных на экране с текущей погодой
+// MARK: Структура для основных данных на экране с текущей погодой
 struct CurrentWetherStruct {
-    let location: String
+    let locationDraft: String
+    var location: String {
+        if locationDraft == "" {
+            return "На странных берегах" // отсылка
+        } else {
+            return locationDraft
+        }
+    }
     let description: String
     let icon: UIImage
     let temp: String
@@ -17,14 +24,16 @@ struct CurrentWetherStruct {
     let windSpeed: String
     let backgroundImage: UIImage
 }
-// Структура для прогнозных данных на экране с текущей погодой
-struct TableViewWeatherStruct {
+
+// MARK: Структура для прогнозных данных на экране с текущей погодой
+struct ShortForecastWeatherStruct {
     let time: String
     let icon: UIImage
     let temp: String
 }
-// Структура для прогнозных данных на экране с прогнозной погодой
-struct ForecastWeatherStruct {
+
+// MARK: Структура для прогнозных данных на экране с прогнозной погодой
+struct LongForecastWeatherStruct {
     let time: String
     let date: String
     let weekday: String

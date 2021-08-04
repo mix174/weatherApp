@@ -13,7 +13,7 @@ final class CurrentTableViewCell: UITableViewCell {
     @IBOutlet private weak var icon: UIImageView!
     @IBOutlet private weak var temp: UILabel!
     
-    func cellSetup(rowData: TableViewWeatherStruct) {
+    func cellSetup(rowData: ShortForecastWeatherStruct) {
         time.text = rowData.time
         icon.image = rowData.icon
         temp.text = rowData.temp

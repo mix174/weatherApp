@@ -9,42 +9,40 @@ import UIKit
 import MBProgressHUD
 
 protocol ForecastWeatherViewControllerProtocol: class {
-    func updateWeather(weatherArray: [ForecastWeatherStruct])
+    func updateWeather(weatherArray: [LongForecastWeatherStruct])
     func showSpinner()
     func hideSpinner()
 }
 
 final class ForecastWeatherViewController: UIViewController, ForecastWeatherViewControllerProtocol {
-    
-    // Связи
+    // MARK: Связи
     // Интерфейс презентера
     var presenter: ForecastWeatherPresenterProtocol?
     
     // Инициализация спиннера
     private let spinner = MBProgressHUD(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
     // Прогнозные данные
-    var forecastData: [ForecastWeatherStruct] = []
+    var forecastData: [LongForecastWeatherStruct] = []
     
+    // MARK: Аутлеты
     // Location Outlet
     @IBOutlet private weak var locationLabel: UILabel!
-    
     // CollectionView
     @IBOutlet private weak var forecastCollectionView: UICollectionView!
-    
     // TableView
     @IBOutlet private weak var forecastTableView: UITableView!
-    
     // CollectionView Scroll Indicator
     @IBOutlet weak var collectionIndicatorScroll: IndicatorScroll!
     
+    // MARK: viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("форекаст-вью загрузился")
         presenter?.viewDidLoad()
     }
     
-    // Функции обновления данных
-    func updateWeather(weatherArray: [ForecastWeatherStruct]) {
+    // MARK: Функции обновления данных
+    // Центральная функция обновления
+    func updateWeather(weatherArray: [LongForecastWeatherStruct]) {
         forecastData = weatherArray
         delegateTableView()
         delegateCollectionView()
@@ -57,24 +55,27 @@ final class ForecastWeatherViewController: UIViewController, ForecastWeatherView
                         UIImage(imageLiteralResourceName: "BG-NormalWeather"))
         hideSpinner()
     }
+    
     // Обновление лейбла местоположения
     func updateLocationLabel() {
         guard let location = forecastData.first?.location else { return }
         locationLabel.text = location
     }
+    
     // Функция присвоения роли делегата и источника данных для TableView
     func delegateTableView() {
         forecastTableView.delegate = self
         forecastTableView.dataSource = self
     }
+    
     // Функция присвоения роли делегата и источника данных для CollectionView
     func delegateCollectionView() {
         forecastCollectionView.delegate = self
         forecastCollectionView.dataSource = self
     }
+    
     // MARK: Настройка фона
     func setBackground(backgroundImage: UIImage) {
-
         let imageView = UIImageView(frame: view.bounds)
         imageView.contentMode =  .scaleAspectFill
         imageView.clipsToBounds = true
@@ -85,7 +86,8 @@ final class ForecastWeatherViewController: UIViewController, ForecastWeatherView
         self.view.sendSubviewToBack(imageView)
     }
     
-    // Функции Спиннера
+    // MARK: Функции Спиннера
+    // Показать Спиннер
     func showSpinner() {
         guard spinner.alpha == 0 else {
             print("spinner is alredy showed")
@@ -96,6 +98,8 @@ final class ForecastWeatherViewController: UIViewController, ForecastWeatherView
         spinner.show(animated: true)
         print("spinner показан")
     }
+    
+    // Спрятать Спиннер
     func hideSpinner() {
         spinner.hide(animated: true)
         spinner.removeFromSuperview()
@@ -103,7 +107,9 @@ final class ForecastWeatherViewController: UIViewController, ForecastWeatherView
     }
     
 }
-// Дополнение для TableView
+
+// MARK: extensions
+// extension для TableView
 extension ForecastWeatherViewController: UITableViewDelegate, UITableViewDataSource {
     // Кол-во прототипов ячейки
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -125,13 +131,13 @@ extension ForecastWeatherViewController: UITableViewDelegate, UITableViewDataSou
     }
 }
 
-// Дополнение для CollectionView
+// extension для CollectionView
 extension ForecastWeatherViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     // Количетсво ячеек
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         forecastData.count
     }
-    // Построение ячейки
+    // Сборка ячейки
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ForecastCollectionViewCell.reuseIdentifier, for: indexPath) as! ForecastCollectionViewCell
         guard let rowData = forecastData[safe: indexPath.row] else {
@@ -153,12 +159,10 @@ extension ForecastWeatherViewController: UICollectionViewDelegate, UICollectionV
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
     }
-    // Номер ячейки, который будет показан при текущем напрвлении скрола
+    // Номер ячейки, который будет показан при текущем направлении скрола
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        // ТЕСТЫ
-        print("willDisplay")
-        print(indexPath.row)
         // Передача в Scroll Indicator номера ячейки, которая будет показана
+        // Работает не совсем корректно: если сделать свайп на 50% и вернуть назад, то индикатор будет показывать следующую ячейку, а по факту представлена будет текущая
         collectionIndicatorScroll.currentPage = indexPath.row
     }
 }

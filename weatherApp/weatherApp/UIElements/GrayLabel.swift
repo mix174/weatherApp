@@ -19,14 +19,15 @@ final class GrayLabel: UILabel {
         layer.cornerRadius = 10
         layer.masksToBounds = true
     }
-    // Работа со смешанным текстом в лейблах
+    
+    // MARK: Работа со смешанным текстом в лейблах
     // Выбор показателя для лейбла
-    enum IndicatorType: String {
+    enum ParameterType: String {
         case humidity = "Влажность"
         case windSpeed = "Ветер"
     }
-    // Установка текста
-    func set2LineText(type: IndicatorType, secondLine: String) {
+    // Установка смешанного текста
+    func set2LineText(type: ParameterType, secondLine: String) {
         attributedText =
             NSMutableAttributedString()
             .normal("\(type.rawValue)\n", fontSize: 21)

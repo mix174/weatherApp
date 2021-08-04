@@ -21,7 +21,7 @@ final class ForecastTableViewCell: UITableViewCell {
         viewInCell.layer.cornerRadius = 10
     }
     
-    func cellSetup(rowData: ForecastWeatherStruct) {
+    func cellSetup(rowData: LongForecastWeatherStruct) {
         viewInCell.cellSetup(rowData: rowData)
     }
 }
