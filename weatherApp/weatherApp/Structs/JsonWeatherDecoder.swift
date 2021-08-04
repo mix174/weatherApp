@@ -5,7 +5,6 @@
 //  Created by Mix174 on 04.06.2021.
 //
 
-import Foundation
 import UIKit
 
 struct CurrentWeatherDecodable: Codable {
@@ -52,7 +51,7 @@ struct CurrentWeatherDecodable: Codable {
         self.timeUnix = timeUnix
         
         // time, date & weekday property setup
-        // Смотрится криво. Ниже в файле есть реализация через computed properties в extension
+        // Смотрится криво. Ниже в файле, в extension, есть реализация через computed properties
         let dateFull = Date(timeIntervalSince1970: timeUnix)
         let dateFormatter = DateFormatter()
         // time
