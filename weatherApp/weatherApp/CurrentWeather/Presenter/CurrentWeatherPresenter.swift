@@ -25,7 +25,7 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
     // MARK: Связи
     // Связь с Вью
     weak var currentView: CurrentWeatherViewControllerProtocol?
-    var searchViewController: SearchViewControllerProtocol? // weak со стороны searchViewController (иначе убегает) | сервис это или Вью?) (по факту, вью, но выполняет функции сервиса)
+    var searchViewController: SearchViewControllerProtocol? // weak со стороны searchViewController (иначе убегает) | сервис это или Вью?) (по факту, вью, но выполняет функции сервиса и функции вью)
     // Связь с сервисами
     private let weatherModel: CurrentWeatherModel
     private let cityModel: CityModel
@@ -62,7 +62,7 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
             guard let self = self else { return }
             switch result {
             case .success(let coords):
-                print(coords)
+                print(coords) // Test
                 self.getWeatherFor(coords: coords)
             case .failure(let error):
                 print("Error at location accured:", error.localizedDescription)
@@ -85,7 +85,7 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
             switch result {
             case .success(let cityStruct):
                 // конвертация структуры списка городов через модель в простой массив
-                let cityArray = self.cityModel.cityArraySetup(cityMassStruct: cityStruct)
+                let cityArray = self.cityModel.сitiesSetup(citiesDecodable: cityStruct)
                 // Передача данных в функцию обновления списка городов
                 self.searchViewController?.updateCity(array: cityArray)
                 // Открытие resultTable после загрузки и обработки
@@ -100,8 +100,11 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
     // MARK: Функции запроса погодных данных с сервера
     // Загрузка данных с погодой по локации с сервера через ServerRequestManager
     func getWeatherFor(coords: Coordinates) {
+        // Подготовка параметров запроса на сервер
+        let locationParams = ParamsEncodable(longitude: coords.longitude, latitude: coords.latitude)
+        
         // Получение данных о текущей погоде
-        serverManager.getCurrentWeatherFor(coords: coords) { [weak self] result in
+        serverManager.getCurrentWeatherFor(location: locationParams) { [weak self] result in
             // self optinal bindinig
             guard let self = self else { return }
             // Обработка результата
@@ -115,8 +118,9 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
                 print("Error at getCurrentWeatherFor(coords) accured:", error.localizedDescription)
             }
         }
+        
         // Получение данных о прогнозной погоде
-        serverManager.getForecastWeatherFor(coords: coords) { [weak self] result in
+        serverManager.getForecastWeatherFor(location: locationParams) { [weak self] result in
             // self optinal bindinig
             guard let self = self else { return }
             // Обработка результата
@@ -136,8 +140,11 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
     
     // Загрузка данных с погодой по выбранному городу с сервера через ServerRequestManager
     func getWeatherFor(city: String) {
+        // Подготовка параметров запроса на сервер
+        let cityParams = ParamsEncodable(city: city)
+        
         // Получение данных о текущей погоде
-        serverManager.getCurrentWeatherFor(city: city){ [weak self] result in
+        serverManager.getCurrentWeatherFor(city: cityParams){ [weak self] result in
             // self optinal bindinig
             guard let self = self else { return }
             // Обработка результата
@@ -153,7 +160,7 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
         }
         
         // Получение данных о прогнозной погоде
-        serverManager.getForecastWeatherFor(city: city) { [weak self] result in
+        serverManager.getForecastWeatherFor(city: cityParams) { [weak self] result in
             // self optinal bindinig
             guard let self = self else { return }
             // Обработка результата

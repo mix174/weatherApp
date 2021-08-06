@@ -9,37 +9,25 @@ import Alamofire
 
 final class ServerManager {
     
-    // MARK: URL'ы и параметры
+    // MARK: URL'ы
     // Бесплатный статичный json-список городов (10969 городов внутри)
     private let cityListUrl = "https://raw.githubusercontent.com/aZolo77/citiesBase/master/cities.json"
-    // Платный сервис: список городов + возможность находить город по первым буквам
-    private let cityOverlapUrl = "https://htmlweb.ru/geo/api.php?json&city_name=%D0%BB&api_key=a7b70091d6d453405b5da7e091f4a281"
     
     // OpenWeatherMap: URL и параметры
-    private let token = "45edc494a20ba962104df229852f3058"
     private let currentUrl = "https://api.openweathermap.org/data/2.5/weather"
     private let forecastUrl = "https://api.openweathermap.org/data/2.5/forecast"
-    private let unitsMetric = "metric"
-    private let langRus = "ru"
     
     // MARK: Определение ошибок с JSON
     // Enum c ошибками для запросов о погоде с сервера, обработки JSON и конвертации JSON в Decodable
-    private enum ServerErrorList: Error {
-        case jsonError
-        case dataNil
+    private enum ServerErrorList: String, Error {
+        case jsonError = "Problem with JSON in server request func"
+        case dataNil = "Data is nil in server request func"
     }
     
-    // MARK: Функции запросов на сервер
+    // MARK: Получение погоды по геолокации
     // Запрос и передача текущей погоды
-    func getCurrentWeatherFor(coords: Coordinates,
+    func getCurrentWeatherFor(location params: ParamsEncodable,
                            completion: @escaping (Result<CurrentWeatherDecodable, Error>) -> Void) {
-        // Параметры для URL
-        let params = ["lat": coords.latitude,
-                      "lon": coords.longitude,
-                      "units": unitsMetric,
-                      "lang": langRus,
-                      "appid": token] as [String : Any]
-        
         AF.request(currentUrl,
                    method: .get,
                    parameters: params)
@@ -67,15 +55,8 @@ final class ServerManager {
     }
     
     // Запрос и передача прогнозной погоды
-    func getForecastWeatherFor(coords: Coordinates,
+    func getForecastWeatherFor(location params: ParamsEncodable,
                             completion: @escaping (Result<ForecastWeatherDecodable, Error>) -> Void) {
-        // Параметры для URL
-        let params = ["lat": coords.latitude,
-                      "lon": coords.longitude,
-                      "units": unitsMetric,
-                      "lang": langRus,
-                      "appid": token] as [String : Any]
-        
         AF.request(forecastUrl,
                    method: .get,
                    parameters: params)
@@ -99,16 +80,11 @@ final class ServerManager {
                 }
             }
     }
-
-    // Запрос и передача текущей погоды по запросу города/страны
-    func getCurrentWeatherFor(city: String,
+    
+    // MARK: Получение погоды по городу
+    // Запрос и передача текущей погоды по запросу города/поселка
+    func getCurrentWeatherFor(city params: ParamsEncodable,
                            completion: @escaping (Result<CurrentWeatherDecodable, Error>) -> Void) {
-        // Параметры для URL
-        let params = ["q": city,
-                      "units": unitsMetric,
-                      "lang": langRus,
-                      "appid": token] as [String : Any]
-        
         AF.request(currentUrl,
                    method: .get,
                    parameters: params)
@@ -136,14 +112,8 @@ final class ServerManager {
     }
     
     // Запрос и передача прогнозной погоды по запросу города/страны
-    func getForecastWeatherFor(city: String,
+    func getForecastWeatherFor(city params: ParamsEncodable,
                             completion: @escaping (Result<ForecastWeatherDecodable, Error>) -> Void) {
-        // Параметры для URL
-        let params = ["q": city,
-                      "units": unitsMetric,
-                      "lang": langRus,
-                      "appid": token] as [String : Any]
-        
         AF.request(forecastUrl,
                    method: .get,
                    parameters: params)
@@ -168,6 +138,7 @@ final class ServerManager {
             }
     }
     
+    // MARK: Получение списка городов
     // Запрос на получение простого списка городов
     func getCities(completion:
                     @escaping (Result<CityDecoder, Error>) -> Void) {
