@@ -12,7 +12,7 @@ protocol CurrentWeatherPresenterProtocol: class {
     func viewDidLoad()
     // Сервисы
     func getLocation()
-    func getCityArray()
+    func getCitiesArray()
     func getWeatherFor(city: String)
     // Вью
     func setOnView(searchBar: UISearchBar)
@@ -76,18 +76,18 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
     
     // MARK: Функции запроса списка городов
     // Запрос статичного списка городов
-    func getCityArray() {
+    func getCitiesArray() {
         currentView?.showSpinner()
         serverManager.getCities() { [weak self] result in
             // self optinal bindinig
             guard let self = self else { return }
             // Обработка результата
             switch result {
-            case .success(let cityStruct):
+            case .success(let citiesDecodable):
                 // конвертация структуры списка городов через модель в простой массив
-                let cityArray = self.cityModel.сitiesSetup(citiesDecodable: cityStruct)
+                let citiesArray = self.cityModel.сitiesSetup(citiesDecodable: citiesDecodable)
                 // Передача данных в функцию обновления списка городов
-                self.searchViewController?.updateCity(array: cityArray)
+                self.searchViewController?.updateCity(array: citiesArray)
                 // Открытие resultTable после загрузки и обработки
                 self.searchViewController?.showResultTable()
             case .failure(let error):

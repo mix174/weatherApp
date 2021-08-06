@@ -7,13 +7,11 @@
 
 final class CityModel {
     
-    func cityArraySetup(cityMassStruct: CityDecoder) -> [String] {
-        
-        let cityStructArray = cityMassStruct.cityArray
-        var cityArray: [String] = []
-        for i in cityStructArray {
-            cityArray.append(i.name)
+    func сitiesSetup(citiesDecodable: CityDecoder) -> [String] {
+        var citiesArray: [String] = []
+        for i in citiesDecodable.citiesArray {
+            citiesArray.append(i.name)
         }
-        return cityArray
+        return citiesArray
     }
 }

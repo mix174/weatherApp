@@ -21,9 +21,9 @@ final class SearchViewController: UIViewController, SearchViewControllerProtocol
     var resultTable: ResultTableView?
     
     // Подгружаемый массив данных
-    var cityArray: [String] = []
+    var citiesArray: [String] = []
     // Массив отфильтрованных результатов поиска
-    var cityArrayFiltered: [String] = []
+    var citiesArrayFiltered: [String] = []
     
     // Инициализация SearchController
     let searchController = UISearchController()
@@ -62,7 +62,7 @@ final class SearchViewController: UIViewController, SearchViewControllerProtocol
     func resultTableSetup(searchBarFrame: CGRect) {
         let tableFrame = CGRect(x: searchBarFrame.minX, y: searchBarFrame.maxY, width: searchBarFrame.width, height: 180)
         resultTable = ResultTableView(frame: tableFrame)
-        resultTable?.register(UINib(nibName: ResultTableViewCell.nibName, bundle: nil),
+        resultTable?.register(UINib(nibName: ResultTableViewCell.reuseIdentifier, bundle: nil),
                               forCellReuseIdentifier: ResultTableViewCell.reuseIdentifier)
         resultTable?.backgroundColor = .clear
         resultTable?.delegate = self
@@ -88,11 +88,11 @@ final class SearchViewController: UIViewController, SearchViewControllerProtocol
     
     // Триггерк показу столбика результатов и к загрузке списка городов
     func willPresentSearchController(_ searchController: UISearchController) {
-        guard cityArray.isEmpty else {
+        guard citiesArray.isEmpty else {
             showResultTable()
             return
         }
-        presenter?.getCityArray()
+        presenter?.getCitiesArray()
     }
 
     // Триггер к сокрытию столбика результатов
@@ -103,7 +103,7 @@ final class SearchViewController: UIViewController, SearchViewControllerProtocol
     // MARK: Фильтр поика и работа со списком городов
     // Фильтр результатов поиска
     func filterContentForSearchText(_ searchText: String) {
-        cityArrayFiltered = cityArray.filter { (city: String) -> Bool in
+        citiesArrayFiltered = citiesArray.filter { (city: String) -> Bool in
             return city.lowercased().contains(searchText.lowercased())
         }
         resultTable?.reloadData()
@@ -111,7 +111,7 @@ final class SearchViewController: UIViewController, SearchViewControllerProtocol
     
     // Обновление массива списка городов
     func updateCity(array: [String]) {
-        cityArray = array
+        citiesArray = array
         resultTable?.reloadData()
     }
     
@@ -120,9 +120,9 @@ final class SearchViewController: UIViewController, SearchViewControllerProtocol
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cityChoice: String
         if isFiltering {
-            cityChoice = cityArrayFiltered[indexPath.row]
+            cityChoice = citiesArrayFiltered[indexPath.row]
         } else {
-            cityChoice = cityArray[indexPath.row]
+            cityChoice = citiesArray[indexPath.row]
         }
         // отправка запроса
         cityWeatherRequest(city: cityChoice)
@@ -153,19 +153,19 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // Выбор массива с городами
         if isFiltering {
-            return cityArrayFiltered.count
+            return citiesArrayFiltered.count
           }
-        return cityArray.count
+        return citiesArray.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ResultTableViewCell.reuseIdentifier,
                                                  for: indexPath) as! ResultTableViewCell
         // Выбор массива с городами
         if isFiltering {
-            let rowDataFiltered = cityArrayFiltered[indexPath.row]
+            let rowDataFiltered = citiesArrayFiltered[indexPath.row]
             cell.cellSetup(city: rowDataFiltered)
         } else {
-            let rowData = cityArray[indexPath.row]
+            let rowData = citiesArray[indexPath.row]
             cell.cellSetup(city: rowData)
         }
         return cell

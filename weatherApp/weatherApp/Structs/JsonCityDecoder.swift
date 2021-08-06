@@ -7,10 +7,10 @@
 
 struct CityDecoder: Codable {
     // Корневой массив
-    let cityArray: [City]
+    let citiesArray: [City]
     
     enum CodingKeys: String, CodingKey {
-        case cityArray = "city"
+        case citiesArray = "city"
     }
     // Вложенная структура, ценность представляет только name
     struct City: Codable {
