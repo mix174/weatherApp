@@ -17,7 +17,7 @@ final class ForecastTableViewCell: UITableViewCell {
     }
     
     func apperanceSetup() {
-        viewInCell.backgroundColor = UIColor(displayP3Red: 250, green: 250, blue: 250, alpha: 0.65)
+        viewInCell.backgroundColor = UIColor.alebaster065
         viewInCell.layer.cornerRadius = 10
     }
     

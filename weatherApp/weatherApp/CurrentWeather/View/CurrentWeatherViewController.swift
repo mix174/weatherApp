@@ -40,8 +40,10 @@ final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewCo
     @IBOutlet private weak var iconImage: UIImageView!
     // Основная температура
     @IBOutlet private weak var mainTempLabel: UILabel!
+    
     // Влажность
     @IBOutlet private weak var humidityLabel: GrayLabel!
+    
     // Скорость ветра
     @IBOutlet private weak var windSpeedLabel: GrayLabel!
     
@@ -83,6 +85,8 @@ final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewCo
     override func viewDidLoad() {
         super.viewDidLoad()
         presenter?.viewDidLoad()
+        
+        
     }
 
     // MARK: Настройка фона
@@ -114,18 +118,10 @@ final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewCo
         weatherDescribLabel.text = data.description
         iconImage.image = data.icon
         mainTempLabel.text = data.temp
-        humidityLabel.set2LineText(type: .humidity, secondLine: data.humidity)
-        windSpeedLabel.set2LineText(type: .windSpeed, secondLine: data.windSpeed)
-        
-        var counter = 0
-        for i in view.subviews {
-            if i is UIImageView {
-                counter += 1
-            }
-        }
-        print("counter: ", counter)
-        
+        humidityLabel.labelSetup(type: .humidity, value: data.humidity)
+        windSpeedLabel.labelSetup(type: .windSpeed, value: data.windSpeed)
     }
+    
     // Присвоение прогнозных данных и активация роли делегата для текущего вьюКонтроллера
     func updateForecastTable(forecastWeather: [ShortForecastWeatherStruct]) {
         forecastTableViewData = forecastWeather
@@ -182,7 +178,7 @@ extension CurrentWeatherViewController: UITableViewDelegate, UITableViewDataSour
         1
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return forecastTableViewData.count
+        forecastTableViewData.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: CurrentTableViewCell.reuseIdentifier, for: indexPath) as! CurrentTableViewCell

@@ -6,31 +6,33 @@
 //
 import UIKit
 
-final class GrayLabel: UILabel {
-
+final class GrayLabel: UIView {
+    // Аутлеты
+    @IBOutlet weak var type: UILabel!
+    @IBOutlet weak var value: UILabel!
+    
     // Автонастройка лейбла
     override func awakeFromNib() {
         super.awakeFromNib()
         appearanceSetup()
     }
+    
     // Функция настройки лейбла
     func appearanceSetup() {
-        backgroundColor = UIColor(displayP3Red: 250, green: 250, blue: 250, alpha: 0.75)
+        backgroundColor = UIColor.alebaster065
         layer.cornerRadius = 10
         layer.masksToBounds = true
     }
     
-    // MARK: Работа со смешанным текстом в лейблах
     // Выбор показателя для лейбла
     enum ParameterType: String {
         case humidity = "Влажность"
         case windSpeed = "Ветер"
     }
-    // Установка смешанного текста
-    func set2LineText(type: ParameterType, secondLine: String) {
-        attributedText =
-            NSMutableAttributedString()
-            .normal("\(type.rawValue)\n", fontSize: 21)
-            .bold("\(secondLine)", fontSize: 21)
+    
+    // Установка текста
+    func labelSetup(type: ParameterType, value: String) {
+        self.type.text = type.rawValue
+        self.value.text = value
     }
 }

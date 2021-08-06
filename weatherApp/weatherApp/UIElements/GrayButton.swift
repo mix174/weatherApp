@@ -7,10 +7,10 @@
 import UIKit
 
 final class GrayButton: UIButton {
-    // свойства
-    var color = UIColor(displayP3Red: 250, green: 250, blue: 250, alpha: 1)
+    // цвета
+    var color = UIColor.alebaster
     var shadowColor = UIColor.gray
-    let touchDownAlpha: CGFloat = 0.6
+    
     // функция настройки
     func setup() {
         // цвет при нажатии
@@ -25,6 +25,7 @@ final class GrayButton: UIButton {
         layer.shadowOpacity = 0.75
         layer.shadowRadius = 2
     }
+    
     // автонастройка кнопки
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -35,6 +36,7 @@ final class GrayButton: UIButton {
     }
     
     // MARK: Анимация кнопки
+    let touchDownAlpha: CGFloat = 0.6
     // условие нажатия кнопки
     override var isHighlighted: Bool {
         didSet {
@@ -46,6 +48,7 @@ final class GrayButton: UIButton {
             }
         }
     }
+    
     // отжатие кнопки
     func touchDown() {
         stopTimer()
