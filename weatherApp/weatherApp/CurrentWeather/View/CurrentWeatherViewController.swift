@@ -16,6 +16,8 @@ protocol CurrentWeatherViewControllerProtocol: class {
     func setBackground(backgroundImage: UIImage)
     func setOnView(searchBar: UISearchBar)
     func setOnView(resultTable: ResultTableView)
+    
+    func getSearchBarSize() -> CGRect
     // parameters
     func setWeather(data: CurrentWetherStruct)
     func updateForecastTable(forecastWeather: [ShortForecastWeatherStruct])
@@ -24,6 +26,7 @@ protocol CurrentWeatherViewControllerProtocol: class {
 }
 
 final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewControllerProtocol {
+    
     
     // Интерфейс презентера
     var presenter: CurrentWeatherPresenterProtocol?
@@ -63,30 +66,27 @@ final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewCo
 // ————————————————————————————————————————————————— //
     
     // MARK: Работа с поиском и результатами (ДРАФТ)
-    
-    let searchBarFrame = CGRect(x: 0, y: 50, width: UIScreen.main.bounds.width, height: 50) // Надо менять такой код
+    @IBOutlet private weak var searchBarView: UIView!
     
     // Размещение searchBar
     func setOnView(searchBar: UISearchBar) {
-        let extraView = UIView(frame: searchBarFrame)
-        extraView.addSubview(searchBar)
-        searchBar.frame = CGRect(x: 0, y: 0, width: extraView.frame.width, height: extraView.frame.height)
-        view.addSubview(extraView)
+        searchBarView.addSubview(searchBar)
+        searchBar.frame = CGRect(x: 0, y: 0, width: searchBarView.frame.width, height: searchBarView.frame.height)
     }
     
     // Размещение resultTable
     func setOnView(resultTable: ResultTableView) {
         view.addSubview(resultTable)
     }
-        
+    func getSearchBarSize() -> CGRect {
+        searchBarView.frame
+    }
     
 // ————————————————————————————————————————————————— //
     // MARK: viewDidLoad
     override func viewDidLoad() {
         super.viewDidLoad()
         presenter?.viewDidLoad()
-        
-        
     }
 
     // MARK: Настройка фона
@@ -99,8 +99,8 @@ final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewCo
         }
         // Установка фона
         let imageView = UIImageView(frame: view.bounds)
-        imageView.contentMode =  .scaleAspectFill
-        imageView.clipsToBounds = true
+        imageView.contentMode =  .center
+        imageView.clipsToBounds = false
         imageView.image = backgroundImage
         imageView.center = view.center
         self.background = imageView

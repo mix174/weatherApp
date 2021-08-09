@@ -77,8 +77,8 @@ final class ForecastWeatherViewController: UIViewController, ForecastWeatherView
     // MARK: Настройка фона
     func setBackground(backgroundImage: UIImage) {
         let imageView = UIImageView(frame: view.bounds)
-        imageView.contentMode =  .scaleAspectFill
-        imageView.clipsToBounds = true
+        imageView.contentMode =  .center
+        imageView.clipsToBounds = false
         imageView.image = backgroundImage
         imageView.alpha = 0.9
         imageView.center = view.center
