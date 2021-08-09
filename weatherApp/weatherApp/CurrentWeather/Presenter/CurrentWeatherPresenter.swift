@@ -12,7 +12,7 @@ protocol CurrentWeatherPresenterProtocol: class {
     func viewDidLoad()
     // Сервисы
     func getLocation()
-    func getCitiesArray()
+    func getCities()
     func getWeatherFor(city: String)
     // Вью
     func setOnView(searchBar: UISearchBar)
@@ -50,8 +50,13 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
         currentView?.showSpinner()
         // Получить данные о текущей локации
         getLocation()
-        // Настройка searchController
-        searchViewController?.mainSetup()
+        // Получение размера для ResultTableView
+        guard let searchBarSize = currentView?.getSearchBarSize() else {
+            print("Some troble in Presenter with CurrentView and size of searchBarSize")
+            return
+        }
+        // Настройка searchController с учетом размера SearchBarView
+        searchViewController?.mainSetup(size: searchBarSize)
     }
     
     // MARK: Функции локации
@@ -76,7 +81,7 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
     
     // MARK: Функции запроса списка городов
     // Запрос статичного списка городов
-    func getCitiesArray() {
+    func getCities() {
         currentView?.showSpinner()
         serverManager.getCities() { [weak self] result in
             // self optinal bindinig
@@ -85,9 +90,9 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
             switch result {
             case .success(let citiesDecodable):
                 // конвертация структуры списка городов через модель в простой массив
-                let citiesArray = self.cityModel.сitiesSetup(citiesDecodable: citiesDecodable)
+                let cities = self.cityModel.сitiesSetup(citiesDecodable: citiesDecodable)
                 // Передача данных в функцию обновления списка городов
-                self.searchViewController?.updateCity(array: citiesArray)
+                self.searchViewController?.updateCity(array: cities)
                 // Открытие resultTable после загрузки и обработки
                 self.searchViewController?.showResultTable()
             case .failure(let error):
@@ -102,7 +107,6 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
     func getWeatherFor(coords: Coordinates) {
         // Подготовка параметров запроса на сервер
         let locationParams = ParamsEncodable(longitude: coords.longitude, latitude: coords.latitude)
-        
         // Получение данных о текущей погоде
         serverManager.getCurrentWeatherFor(location: locationParams) { [weak self] result in
             // self optinal bindinig
@@ -142,7 +146,6 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
     func getWeatherFor(city: String) {
         // Подготовка параметров запроса на сервер
         let cityParams = ParamsEncodable(city: city)
-        
         // Получение данных о текущей погоде
         serverManager.getCurrentWeatherFor(city: cityParams){ [weak self] result in
             // self optinal bindinig
@@ -173,7 +176,7 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
                 // Передача данных в функцию обновления экрана
                 self.updateOnView(forecastWeather: forecastWeatherStruct)
             case .failure(let error):
-                print("Error at getForecastWeatherFor(coords) accured:", error.localizedDescription)
+                print("Error at getForecastWeatherFor(city) accured:", error.localizedDescription)
             }
         }
     }

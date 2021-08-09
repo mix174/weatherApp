@@ -7,11 +7,11 @@
 
 final class CityModel {
     
-    func сitiesSetup(citiesDecodable: CityDecoder) -> [String] {
-        var citiesArray: [String] = []
-        for i in citiesDecodable.citiesArray {
-            citiesArray.append(i.name)
+    func сitiesSetup(citiesDecodable: CityDecodable) -> [String] {
+        var cities: [String] = []
+        for i in citiesDecodable.cities {
+            cities.append(i.name)
         }
-        return citiesArray
+        return cities
     }
 }

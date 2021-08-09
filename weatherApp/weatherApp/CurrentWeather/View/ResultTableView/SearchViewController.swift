@@ -8,11 +8,11 @@
 import UIKit
 
 protocol SearchViewControllerProtocol: class {
-    func mainSetup()
+    func mainSetup(size: CGRect)
     func updateCity(array: [String])
     func showResultTable()
 }
-// переименовать в SearchViewController
+
 final class SearchViewController: UIViewController, SearchViewControllerProtocol {
     // Интерфейс презентера
     weak var presenter: CurrentWeatherPresenterProtocol?
@@ -21,9 +21,9 @@ final class SearchViewController: UIViewController, SearchViewControllerProtocol
     var resultTable: ResultTableView?
     
     // Подгружаемый массив данных
-    var citiesArray: [String] = []
+    var cities: [String] = []
     // Массив отфильтрованных результатов поиска
-    var citiesArrayFiltered: [String] = []
+    var citiesFiltered: [String] = []
     
     // Инициализация SearchController
     let searchController = UISearchController()
@@ -38,11 +38,11 @@ final class SearchViewController: UIViewController, SearchViewControllerProtocol
     
     // MARK: Функции настройки отображения поисковой строки и результатов поиска
     // размеры рамки searchBar — решить вопрос, как брать эти данные
-    let searchBarFrame = CGRect(x: 0, y: 50, width: UIScreen.main.bounds.width, height: 50)
+    let searchBarFrame2 = CGRect(x: 0, y: 50, width: UIScreen.main.bounds.width, height: 50)
     // Преднастройка класса
-    func mainSetup() {
+    func mainSetup(size: CGRect) {
         searchSetup()
-        resultTableSetup(searchBarFrame: searchBarFrame)
+        resultTableSetup(searchBarSize: size)
     }
     
     // Настройка строки поиска и добавление на MainVC
@@ -59,8 +59,11 @@ final class SearchViewController: UIViewController, SearchViewControllerProtocol
     }
     
     // Настройка таблички результатов поиска
-    func resultTableSetup(searchBarFrame: CGRect) {
-        let tableFrame = CGRect(x: searchBarFrame.minX, y: searchBarFrame.maxY, width: searchBarFrame.width, height: 180)
+    func resultTableSetup(searchBarSize: CGRect) {
+        let tableFrame = CGRect(x: searchBarSize.minX,
+                                y: searchBarSize.maxY,
+                                width: searchBarSize.width,
+                                height: searchBarSize.height * 4)
         resultTable = ResultTableView(frame: tableFrame)
         resultTable?.register(UINib(nibName: ResultTableViewCell.reuseIdentifier, bundle: nil),
                               forCellReuseIdentifier: ResultTableViewCell.reuseIdentifier)
@@ -88,11 +91,11 @@ final class SearchViewController: UIViewController, SearchViewControllerProtocol
     
     // Триггерк показу столбика результатов и к загрузке списка городов
     func willPresentSearchController(_ searchController: UISearchController) {
-        guard citiesArray.isEmpty else {
+        guard cities.isEmpty else {
             showResultTable()
             return
         }
-        presenter?.getCitiesArray()
+        presenter?.getCities()
     }
 
     // Триггер к сокрытию столбика результатов
@@ -103,7 +106,7 @@ final class SearchViewController: UIViewController, SearchViewControllerProtocol
     // MARK: Фильтр поика и работа со списком городов
     // Фильтр результатов поиска
     func filterContentForSearchText(_ searchText: String) {
-        citiesArrayFiltered = citiesArray.filter { (city: String) -> Bool in
+        citiesFiltered = cities.filter { (city: String) -> Bool in
             return city.lowercased().contains(searchText.lowercased())
         }
         resultTable?.reloadData()
@@ -111,7 +114,7 @@ final class SearchViewController: UIViewController, SearchViewControllerProtocol
     
     // Обновление массива списка городов
     func updateCity(array: [String]) {
-        citiesArray = array
+        cities = array
         resultTable?.reloadData()
     }
     
@@ -120,9 +123,9 @@ final class SearchViewController: UIViewController, SearchViewControllerProtocol
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cityChoice: String
         if isFiltering {
-            cityChoice = citiesArrayFiltered[indexPath.row]
+            cityChoice = citiesFiltered[indexPath.row]
         } else {
-            cityChoice = citiesArray[indexPath.row]
+            cityChoice = cities[indexPath.row]
         }
         // отправка запроса
         cityWeatherRequest(city: cityChoice)
@@ -153,19 +156,19 @@ extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // Выбор массива с городами
         if isFiltering {
-            return citiesArrayFiltered.count
+            return citiesFiltered.count
           }
-        return citiesArray.count
+        return cities.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ResultTableViewCell.reuseIdentifier,
                                                  for: indexPath) as! ResultTableViewCell
         // Выбор массива с городами
         if isFiltering {
-            let rowDataFiltered = citiesArrayFiltered[indexPath.row]
+            let rowDataFiltered = citiesFiltered[indexPath.row]
             cell.cellSetup(city: rowDataFiltered)
         } else {
-            let rowData = citiesArray[indexPath.row]
+            let rowData = cities[indexPath.row]
             cell.cellSetup(city: rowData)
         }
         return cell

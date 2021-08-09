@@ -141,7 +141,7 @@ final class ServerManager {
     // MARK: Получение списка городов
     // Запрос на получение простого списка городов
     func getCities(completion:
-                    @escaping (Result<CityDecoder, Error>) -> Void) {
+                    @escaping (Result<CityDecodable, Error>) -> Void) {
         
         AF.request(cityListUrl,
                    method: .get)
@@ -158,7 +158,7 @@ final class ServerManager {
                 }
                 // Конвертация данных из JSON в Decodable
                 do {
-                    let cityMass = try JSONDecoder().decode(CityDecoder.self, from: data)
+                    let cityMass = try JSONDecoder().decode(CityDecodable.self, from: data)
                     completion(.success(cityMass)) // передача cityMass в completion
                 } catch {
                     completion(.failure(error))

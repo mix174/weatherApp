@@ -5,12 +5,12 @@
 //  Created by Mix174 on 04.08.2021.
 //
 
-struct CityDecoder: Codable {
+struct CityDecodable: Codable {
     // Корневой массив
-    let citiesArray: [City]
+    let cities: [City]
     
     enum CodingKeys: String, CodingKey {
-        case citiesArray = "city"
+        case cities = "city"
     }
     // Вложенная структура, ценность представляет только name
     struct City: Codable {

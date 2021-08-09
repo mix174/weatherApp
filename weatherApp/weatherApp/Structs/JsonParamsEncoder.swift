@@ -10,7 +10,7 @@ import UIKit
 struct ParamsEncodable: Encodable {
     var lon: Double?
     var lat: Double?
-    var city: String?
+    var q: String?
     let units = "metric"
     let lang = "ru"
     let appid = "45edc494a20ba962104df229852f3058"
@@ -20,6 +20,6 @@ struct ParamsEncodable: Encodable {
         self.lat = latitude
     }
     init(city: String) {
-        self.city = city
+        self.q = city
     }
 }

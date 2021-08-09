@@ -11,7 +11,7 @@ final class CurrentWeatherModel {
     func weatherStructSetup(currentWeather: CurrentWeatherDecodable) -> CurrentWetherStruct {
         // Возможно нужнa проверка
         let weatherStruct = CurrentWetherStruct(locationDraft: currentWeather.city ?? "not set",
-                                                description: currentWeather.weather.description,
+                                                descriptionDraft: currentWeather.weather.description,
                                                 icon: currentWeather.weather.iconImage ?? UIImage(imageLiteralResourceName: "none"),
                                                 temp: currentWeather.main.temp,
                                                 humidity: currentWeather.main.humidity,

@@ -17,7 +17,13 @@ struct CurrentWetherStruct {
             return locationDraft
         }
     }
-    let description: String
+    let descriptionDraft: String
+    var description: String {
+        let string = descriptionDraft
+        let startIndex = string.startIndex
+        
+        return string.replacingCharacters(in: startIndex...startIndex, with: String(string[startIndex]).capitalized)
+    }
     let icon: UIImage
     let temp: String
     let humidity: String
