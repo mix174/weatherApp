@@ -17,6 +17,7 @@ final class GrayButton: UIButton {
         backgroundColor = .clear
         // основной цвет
         layer.backgroundColor = color.cgColor
+        
         // радиус
         layer.cornerRadius = 10
         // настройка тени

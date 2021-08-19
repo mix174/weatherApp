@@ -14,6 +14,7 @@ final class CurrentWeatherModel {
                                                 descriptionDraft: currentWeather.weather.description,
                                                 icon: currentWeather.weather.iconImage ?? UIImage(imageLiteralResourceName: "none"),
                                                 temp: currentWeather.main.temp,
+                                                tempBlank: currentWeather.main.tempBlank,
                                                 humidity: currentWeather.main.humidity,
                                                 windSpeed: currentWeather.wind.windSpeed,
                                                 backgroundImage: currentWeather.weather.backgroundImage ?? UIImage(imageLiteralResourceName: "BG-NormalWeather")) // как делать правильно?
