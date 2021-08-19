@@ -26,6 +26,7 @@ struct CurrentWetherStruct {
     }
     let icon: UIImage
     let temp: String
+    let tempBlank: String
     let humidity: String
     let windSpeed: String
     let backgroundImage: UIImage

@@ -131,6 +131,7 @@ struct CurrentWeatherDecodable: Codable {
     // Вложенная структура Main
     struct Main: Codable {
         let temp: String
+        let tempBlank: String
         let feelsLike: String
         let pressure: String
         let humidity: String
@@ -150,6 +151,7 @@ struct CurrentWeatherDecodable: Codable {
             let humidity = try container.decode(Double.self, forKey: .humidity)
             
             self.temp = "\(Int(temp.rounded()))°"
+            self.tempBlank = "\(Int(temp.rounded()))"
             self.feelsLike = "\(Int(feelsLike.rounded()))°"
             self.pressure = "\(Int((pressure / 1000 * 750.064).rounded())) ммрт"
             self.humidity = "\(Int(humidity.rounded()))%"
@@ -296,14 +298,14 @@ extension CurrentWeatherDecodable.Weather {
             return UIImage(named: "thunderstormDay")
         // Снег
         case .snowDay:
-            return UIImage(named: "none")
+            return UIImage(named: "snowDay")
         case .snowNight:
-            return UIImage(named: "none")
+            return UIImage(named: "snowDay")
         // Туман
         case .mistDay:
-            return UIImage(named: "none")
+            return UIImage(named: "mistDay")
         case .mistNight:
-            return UIImage(named: "none")
+            return UIImage(named: "mistDay")
         // картинка при отсутствии
         case .none:
             return UIImage(named: "none")
