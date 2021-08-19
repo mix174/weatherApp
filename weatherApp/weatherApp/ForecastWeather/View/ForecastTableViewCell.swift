@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 final class ForecastTableViewCell: UITableViewCell {
     
@@ -23,5 +24,13 @@ final class ForecastTableViewCell: UITableViewCell {
     
     func cellSetup(rowData: LongForecastWeatherStruct) {
         viewInCell.cellSetup(rowData: rowData)
+    }
+    
+    func setConstrints() {
+        viewInCell.snp.makeConstraints {make in
+            make.top.bottom.equalToSuperview().inset(5)
+            make.leading.trailing.equalToSuperview().inset(10)
+        }
+        viewInCell.setConstrints()
     }
 }
