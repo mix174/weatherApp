@@ -6,8 +6,9 @@
 //
 
 // MARK: Протоколы
-protocol ForecastWeatherPresenterProtocol: class {
+protocol ForecastWeatherPresenterProtocol: AnyObject {
     func viewDidLoad()
+    func moveToCurrentView()
 }
 
 final class ForecastWeatherPresenter: ForecastWeatherPresenterProtocol {
@@ -43,6 +44,11 @@ final class ForecastWeatherPresenter: ForecastWeatherPresenterProtocol {
     // Обновление данных на forecastView
     func updateWeatherView(weatherArray: [LongForecastWeatherStruct]) {
         forecastView?.updateWeather(weatherArray: weatherArray)
+    }
+    // MARK: Навигация
+    // Перемещение на основной экран
+    func moveToCurrentView() {
+        RootManager.shared.moveToCurrentView()
     }
 }
 
