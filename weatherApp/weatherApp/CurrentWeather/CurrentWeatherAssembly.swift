@@ -26,13 +26,19 @@ final class CurrentWeatherAssembly {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let viewController = storyboard.instantiateViewController(identifier: String(describing: CurrentWeatherViewController.self)) as CurrentWeatherViewController
         // Здесь ли его создавать? Можно сделать через инит
-        let searchViewController = SearchViewController()
+        
+        let searchResultController = SearchResultController()
+        
+        let searchController = UISearchController(searchResultsController: searchResultController)
         
         viewController.presenter = presenter
         presenter.currentView = viewController
         
-        searchViewController.presenter = presenter
-        presenter.searchViewController = searchViewController
+        searchResultController.presenter = presenter
+        presenter.searchResultController = searchResultController
+        
+        viewController.searchController = searchController
+        searchResultController.searchController = searchController
         
         return viewController
     }

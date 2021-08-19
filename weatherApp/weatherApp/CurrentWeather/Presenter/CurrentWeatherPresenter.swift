@@ -8,24 +8,23 @@
 import UIKit
 
 // MARK: Протоколы
-protocol CurrentWeatherPresenterProtocol: class {
+// class inhiritance has been deprtiated -> AnyObject
+protocol CurrentPresenterProtocol: AnyObject {
     func viewDidLoad()
     // Сервисы
+    func getSearchBarAnchor() -> CGFloat?
     func getLocation()
     func getCities()
     func getWeatherFor(city: String)
-    // Вью
-    func setOnView(searchBar: UISearchBar)
-    func setOnView(resultTable: ResultTableView)
     // Навигация
     func moveToForecastView()
 }
 
-final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
+final class CurrentWeatherPresenter: CurrentPresenterProtocol {
     // MARK: Связи
     // Связь с Вью
     weak var currentView: CurrentWeatherViewControllerProtocol?
-    var searchViewController: SearchViewControllerProtocol? // weak со стороны searchViewController (иначе убегает) | сервис это или Вью?) (по факту, вью, но выполняет функции сервиса и функции вью)
+    var searchResultController: SearchResultControllerProtocol? // weak со стороны searchResultController (иначе убегает) | сервис это или Вью?) (по факту, вью, но выполняет функции сервиса и функции вью)
     // Связь с сервисами
     private let weatherModel: CurrentWeatherModel
     private let cityModel: CityModel
@@ -50,13 +49,13 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
         currentView?.showSpinner()
         // Получить данные о текущей локации
         getLocation()
-        // Получение размера для ResultTableView
-        guard let searchBarSize = currentView?.getSearchBarSize() else {
-            print("Some troble in Presenter with CurrentView and size of searchBarSize")
-            return
-        }
-        // Настройка searchController с учетом размера SearchBarView
-        searchViewController?.mainSetup(size: searchBarSize)
+        
+        // Настройка searchController без учета размеров SearchBarView
+        searchResultController?.mainSetup()
+    }
+    
+    func getSearchBarAnchor() -> CGFloat? {
+        currentView?.getSearchBarAnchor()
     }
     
     // MARK: Функции локации
@@ -92,9 +91,9 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
                 // конвертация структуры списка городов через модель в простой массив
                 let cities = self.cityModel.сitiesSetup(citiesDecodable: citiesDecodable)
                 // Передача данных в функцию обновления списка городов
-                self.searchViewController?.updateCity(array: cities)
+                self.searchResultController?.updateCities(array: cities)
                 // Открытие resultTable после загрузки и обработки
-                self.searchViewController?.showResultTable()
+//                self.searchViewController?.showResultTable()
             case .failure(let error):
                 print("Error at getCities accured:", error.localizedDescription)
             }
@@ -182,16 +181,6 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
     }
     
     // MARK: Обновление данных и настройка CurrentView
-    // Добавление searchBar на currentView
-    func setOnView(searchBar: UISearchBar) {
-        currentView?.setOnView(searchBar: searchBar)
-    }
-    
-    // Добавление resultTable на currentView
-    func setOnView(resultTable: ResultTableView) {
-        currentView?.setOnView(resultTable: resultTable)
-    }
-    
     // Обновление текущих данных на куррент Вью
     func updateOnView(currentWeather: CurrentWetherStruct) {
         self.currentView?.setWeather(data: currentWeather)
