@@ -24,7 +24,7 @@ final class CurrentWeatherPresenter: CurrentPresenterProtocol {
     // MARK: Связи
     // Связь с Вью
     weak var currentView: CurrentWeatherViewControllerProtocol?
-    var searchResultController: SearchResultControllerProtocol? // weak со стороны searchResultController (иначе убегает) | сервис это или Вью?) (по факту, вью, но выполняет функции сервиса и функции вью)
+    var searchResultController: SearchResultControllerProtocol? // weak со стороны searchResultController (иначе убегает)
     // Связь с сервисами
     private let weatherModel: CurrentWeatherModel
     private let cityModel: CityModel
@@ -50,10 +50,10 @@ final class CurrentWeatherPresenter: CurrentPresenterProtocol {
         // Получить данные о текущей локации
         getLocation()
         
-        // Настройка searchController без учета размеров SearchBarView
+        // Настройка searchController без учета размеров и отступов SearchBarView
         searchResultController?.mainSetup()
     }
-    
+    // Передает отступ для таблицы результатов поиска
     func getSearchBarAnchor() -> CGFloat? {
         currentView?.getSearchBarAnchor()
     }
@@ -78,7 +78,7 @@ final class CurrentWeatherPresenter: CurrentPresenterProtocol {
         }
     }
     
-    // MARK: Функции запроса списка городов
+    // MARK: Функции запроса городов
     // Запрос статичного списка городов
     func getCities() {
         currentView?.showSpinner()
@@ -92,8 +92,6 @@ final class CurrentWeatherPresenter: CurrentPresenterProtocol {
                 let cities = self.cityModel.сitiesSetup(citiesDecodable: citiesDecodable)
                 // Передача данных в функцию обновления списка городов
                 self.searchResultController?.updateCities(array: cities)
-                // Открытие resultTable после загрузки и обработки
-//                self.searchViewController?.showResultTable()
             case .failure(let error):
                 print("Error at getCities accured:", error.localizedDescription)
             }

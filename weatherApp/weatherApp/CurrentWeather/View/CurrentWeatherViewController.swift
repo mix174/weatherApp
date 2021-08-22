@@ -32,8 +32,6 @@ final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewCo
     // searchController
     var searchController: UISearchController?
     
-    
-    
     // MARK: Переменные класса
     // Инициализация спиннера
     private let spinner = MBProgressHUD(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
