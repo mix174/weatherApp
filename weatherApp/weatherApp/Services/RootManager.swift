@@ -35,6 +35,5 @@ final class RootManager {
     func moveToCurrentView() {
         print("moveToCurrentView in Root Manager")
         forecastVCroot?.dismiss(animated: true, completion: nil)
-        // Также надо удалить все аутлеты на вью тд
     }
 }

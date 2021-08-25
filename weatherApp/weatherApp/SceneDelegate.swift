@@ -19,9 +19,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         let window = UIWindow(windowScene: windowScene)
-        RootManager.shared.start(window: window)
         self.window = window
         window.makeKeyAndVisible()
+        RootManager.shared.start(window: window)
     }
 
     

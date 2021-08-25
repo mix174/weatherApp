@@ -5,26 +5,27 @@
 //  Created by Mix174 on 25.06.2021.
 //
 
-protocol ForecastWeatherPresenterProtocol: class {
+// MARK: Протоколы
+protocol ForecastWeatherPresenterProtocol: AnyObject {
     func viewDidLoad()
     func moveToCurrentView()
 }
 
 final class ForecastWeatherPresenter: ForecastWeatherPresenterProtocol {
-    
-    // Связь с сервисами
+    // MARK: Связи
+    // Связь с Вью
     weak var forecastView: ForecastWeatherViewControllerProtocol?
+    // Связь с сервисами
     private let weatherModel: ForecastWeatherModel
     private let dataManager = DataManager.shared
     
-    // Инициализатор
+    // MARK: Инит
     init(forecastDataModel: ForecastWeatherModel) {
         self.weatherModel = forecastDataModel
     }
-
-    // Загрузка экрана с прогнозной погодой
+    
+    // MARK: viewDidLoad
     func viewDidLoad() {
-        print("Презентер-Forecast загрузился")
         forecastView?.showSpinner()
         guard let forecastWather = dataManager.forecastWeather else {
             print("no forecast weather at forecast-presenter")
@@ -32,18 +33,21 @@ final class ForecastWeatherPresenter: ForecastWeatherPresenterProtocol {
         weatherModelSetup(forecastWeather: forecastWather)
     }
     
+    // MARK: Работа с моделью данных
+    // Сборка модели данных
     func weatherModelSetup(forecastWeather: ForecastWeatherDecodable) {
         let weatherArray = weatherModel.weatherStructSetup(forecastWeather: forecastWeather)
         updateWeatherView(weatherArray: weatherArray)
     }
     
-    func updateWeatherView(weatherArray: [ForecastWeatherStruct]) {
+    // MARK: Работа с Вью
+    // Обновление данных на forecastView
+    func updateWeatherView(weatherArray: [LongForecastWeatherStruct]) {
         forecastView?.updateWeather(weatherArray: weatherArray)
     }
-    
-    // Перемещение на экран с текущей погодой
+    // MARK: Навигация
+    // Перемещение на основной экран
     func moveToCurrentView() {
-        print("moveToCur in presenter")
         RootManager.shared.moveToCurrentView()
     }
 }
