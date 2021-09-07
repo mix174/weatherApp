@@ -94,6 +94,7 @@ final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewCo
     func setOnView(resultTable: ResultTableView) {
         view.addSubview(resultTable)
     }
+    
     // Размеры для resultTable
     func getSearchBarAnchor() -> CGFloat {
         var anchor: CGFloat { searchBarView.frame.maxY }
@@ -107,7 +108,6 @@ final class CurrentWeatherViewController: UIViewController, CurrentWeatherViewCo
         let g = searchBarView.snp.bottom
         print(g)
         return anchor
-//        return g
     }
     
 // ————————————————————————————————————————————————— //
