@@ -7,29 +7,42 @@
 
 import UIKit
 
-protocol CurrentWeatherPresenterProtocol: class {
+// MARK: Протоколы
+// class inhiritance has been deprtiated -> AnyObject
+protocol CurrentPresenterProtocol: AnyObject {
     func viewDidLoad()
+    // Сервисы
+    func getSearchBarAnchor() -> CGFloat?
     func getLocation()
+    func getCities()
     func getWeatherFor(city: String)
+    // Навигация
     func moveToForecastView()
 }
 
-final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
-    
-    // Связь с сервисами
+final class CurrentWeatherPresenter: CurrentPresenterProtocol {
+    // MARK: Связи
+    // Связь с Вью
     weak var currentView: CurrentWeatherViewControllerProtocol?
+    var searchResultController: SearchResultControllerProtocol? // weak со стороны searchResultController (иначе убегает)
+    // Связь с сервисами
     private let weatherModel: CurrentWeatherModel
+    private let cityModel: CityModel
     private let serverManager: ServerManager
     private let locator: Locator
     
+    // MARK: Инит
     init(currentWeatherModel: CurrentWeatherModel,
+         cityModel: CityModel,
          serverManager: ServerManager,
          locator: Locator) {
         self.weatherModel = currentWeatherModel
+        self.cityModel = cityModel
         self.serverManager = serverManager
         self.locator = locator
     }
     
+    // MARK: viewDidLoad
     // Загрузка экрана с текущей погодой
     func viewDidLoad() {
         // Показать значок загрузки перед загрузкой данных о локации и погоде
@@ -37,7 +50,15 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
         // Получить данные о текущей локации
         getLocation()
         
+        // Настройка searchController без учета размеров и отступов SearchBarView
+        searchResultController?.mainSetup()
     }
+    // Передает отступ для таблицы результатов поиска
+    func getSearchBarAnchor() -> CGFloat? {
+        currentView?.getSearchBarAnchor()
+    }
+    
+    // MARK: Функции локации
     // Запросить данные о текущем местоположении
     func getLocation() {
         locator.getLocation() { [weak self] result in
@@ -45,8 +66,8 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
             guard let self = self else { return }
             switch result {
             case .success(let coords):
-                print(coords)
-                self.getServerData(coords: coords)
+                print(coords) // Test
+                self.getWeatherFor(coords: coords)
             case .failure(let error):
                 print("Error at location accured:", error.localizedDescription)
                 // спрятать спиннер
@@ -57,10 +78,34 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
         }
     }
     
-    // Загрузить данные с погодой с сервера через ServerRequestManager
-    func getServerData(coords: Coordinates) {
-        // Данные о текущей погоде
-        serverManager.getCurrentWeather(coords: coords) { [weak self] result in
+    // MARK: Функции запроса городов
+    // Запрос статичного списка городов
+    func getCities() {
+        currentView?.showSpinner()
+        serverManager.getCities() { [weak self] result in
+            // self optinal bindinig
+            guard let self = self else { return }
+            // Обработка результата
+            switch result {
+            case .success(let citiesDecodable):
+                // конвертация структуры списка городов через модель в простой массив
+                let cities = self.cityModel.сitiesSetup(citiesDecodable: citiesDecodable)
+                // Передача данных в функцию обновления списка городов
+                self.searchResultController?.updateCities(array: cities)
+            case .failure(let error):
+                print("Error at getCities accured:", error.localizedDescription)
+            }
+        }
+        currentView?.hideSpinner()
+    }
+    
+    // MARK: Функции запроса погодных данных с сервера
+    // Загрузка данных с погодой по локации с сервера через ServerRequestManager
+    func getWeatherFor(coords: Coordinates) {
+        // Подготовка параметров запроса на сервер
+        let locationParams = ParamsEncodable(longitude: coords.longitude, latitude: coords.latitude)
+        // Получение данных о текущей погоде
+        serverManager.getCurrentWeatherFor(location: locationParams) { [weak self] result in
             // self optinal bindinig
             guard let self = self else { return }
             // Обработка результата
@@ -71,11 +116,12 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
                 // Передача данных в функцию обновления экрана
                 self.updateOnView(currentWeather: currentWeatherStruct)
             case .failure(let error):
-                print("Error at currentWeatherData accured:", error.localizedDescription)
+                print("Error at getCurrentWeatherFor(coords) accured:", error.localizedDescription)
             }
         }
-        // Данные о прогнозной погоде
-        serverManager.getForecastWeather(coords: coords) { [weak self] result in
+        
+        // Получение данных о прогнозной погоде
+        serverManager.getForecastWeatherFor(location: locationParams) { [weak self] result in
             // self optinal bindinig
             guard let self = self else { return }
             // Обработка результата
@@ -85,42 +131,70 @@ final class CurrentWeatherPresenter: CurrentWeatherPresenterProtocol {
                 DataManager.shared.forecastWeather = forecastWeather // можно отложить
                 // конвертация погодных данных через модель
                 let forecastWeatherStruct = self.weatherModel.weatherStructSetup(forecastWeather: forecastWeather)
-                
                 // Передача данных в функцию обновления экрана
                 self.updateOnView(forecastWeather: forecastWeatherStruct)
             case .failure(let error):
-                print("Error at forecast accured:", error.localizedDescription)
+                print("Error at getForecastWeatherFor(coords) accured:", error.localizedDescription)
             }
         }
     }
     
+    // Загрузка данных с погодой по выбранному городу с сервера через ServerRequestManager
+    func getWeatherFor(city: String) {
+        // Подготовка параметров запроса на сервер
+        let cityParams = ParamsEncodable(city: city)
+        // Получение данных о текущей погоде
+        serverManager.getCurrentWeatherFor(city: cityParams){ [weak self] result in
+            // self optinal bindinig
+            guard let self = self else { return }
+            // Обработка результата
+            switch result {
+            case .success(let currentWeather):
+                // конвертация погодных данных через модель
+                let currentWeatherStruct = self.weatherModel.weatherStructSetup(currentWeather: currentWeather)
+                // Передача данных в функцию обновления экрана
+                self.updateOnView(currentWeather: currentWeatherStruct)
+            case .failure(let error):
+                print("Error at getCurrentWeatherFor(city) accured:", error.localizedDescription)
+            }
+        }
+        
+        // Получение данных о прогнозной погоде
+        serverManager.getForecastWeatherFor(city: cityParams) { [weak self] result in
+            // self optinal bindinig
+            guard let self = self else { return }
+            // Обработка результата
+            switch result {
+            case .success(let forecastWeather):
+                // Передача данных в DataManager для экрана с прогнозом
+                DataManager.shared.forecastWeather = forecastWeather // можно отложить
+                // конвертация погодных данных через модель
+                let forecastWeatherStruct = self.weatherModel.weatherStructSetup(forecastWeather: forecastWeather)
+                // Передача данных в функцию обновления экрана
+                self.updateOnView(forecastWeather: forecastWeatherStruct)
+            case .failure(let error):
+                print("Error at getForecastWeatherFor(city) accured:", error.localizedDescription)
+            }
+        }
+    }
+    
+    // MARK: Обновление данных и настройка CurrentView
     // Обновление текущих данных на куррент Вью
     func updateOnView(currentWeather: CurrentWetherStruct) {
-        // TEST
-        print("Функция обновления текущих данных в презентере на вью")
         self.currentView?.setWeather(data: currentWeather)
-        self.currentView?.hideSpinner()
     }
     
     // Обновление прогнозных данных на куррент Вью
-    func updateOnView(forecastWeather: [TableViewWeatherStruct]) {
-        // TEST
-        print("Функция обновления прогнозных данных в презентере на вью")
-        print(forecastWeather[safe: 0]?.time ?? "time is not set")
+    func updateOnView(forecastWeather: [ShortForecastWeatherStruct]) {
         currentView?.updateForecastTable(forecastWeather: forecastWeather)
+        self.currentView?.hideSpinner()
     }
     
-//    Перемещение на экран с прогнозом
+    // MARK: Навигация
+    // Перемещение на экран с прогнозом
     func moveToForecastView() {
         RootManager.shared.moveToForecastView()
     }
-    
-    // #Later
-    // Получение инфы о погоде в городе по запросу
-    func getWeatherFor(city: String) {
-        print("func of getting weather for \(city) is not ready yet")
-    }
-    
 }
 
 

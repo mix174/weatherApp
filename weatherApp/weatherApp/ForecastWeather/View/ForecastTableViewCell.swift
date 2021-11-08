@@ -6,18 +6,31 @@
 //
 
 import UIKit
+import SnapKit
 
 final class ForecastTableViewCell: UITableViewCell {
     
-    @IBOutlet private weak var weekday: UILabel!
-    @IBOutlet private weak var date: UILabel!
-    @IBOutlet private weak var icon: UIImageView!
-    @IBOutlet private weak var temp: UILabel!
+    @IBOutlet weak var viewInCell: ForecastViewInCell!
     
-    func cellSetup(rowData: ForecastWeatherStruct) {
-        weekday.text = rowData.weekday
-        date.text = rowData.date
-        icon.image = rowData.icon
-        temp.text = rowData.temp
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        apperanceSetup()
+    }
+    
+    func apperanceSetup() {
+        viewInCell.backgroundColor = UIColor.alebaster065
+        viewInCell.layer.cornerRadius = 10
+    }
+    
+    func cellSetup(rowData: LongForecastWeatherStruct) {
+        viewInCell.cellSetup(rowData: rowData)
+    }
+    
+    func setConstrints() {
+        viewInCell.snp.makeConstraints {make in
+            make.top.bottom.equalToSuperview().inset(5)
+            make.leading.trailing.equalToSuperview().inset(10)
+        }
+        viewInCell.setConstrints()
     }
 }
